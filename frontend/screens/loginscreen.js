@@ -1,4 +1,7 @@
 //Tela de Login
+
+//adicionado alguns comentários sei lá
+
 import React, { useState } from 'react';
 import { 
     View, 
@@ -7,7 +10,13 @@ import {
     TextInput, 
     TouchableOpacity, 
     SafeAreaView,
-    Image 
+    Image,
+    // Componentes adicionados para o teclado
+    KeyboardAvoidingView,
+    ScrollView,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Platform
 } from 'react-native';
 import { COLORS, SPACING } from '../styles/theme'; 
 import LogoImage from '../../assets/bemvindomascote.png'; // Logo da tela de login aqui viusss
@@ -28,82 +37,96 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        
-        {/* --- AGRUPANDO A LOGO E O NOME EDUKATU AQUI --- */}
-        {/* 1. Área do Logo: um Container (View) que agrupa a Imagem e o Texto */}
-        <View style={styles.logoContainer}>
-          <Image 
-            source={LogoImage} 
-            style={styles.logoImage} // Estilo renomeado para a imagem
-            resizeMode="contain" 
-          />
-          <Text style={styles.logoText}>EDU KATÚ</Text> 
-        </View>
-        {/* --- FIM DA MUDANÇA AQUI!!! Sim foi eu welbersued --- */}
-
-
-        {/* 2. Seleção de Perfil (ALUNO / PROFESSOR) - Falta ver como fica o de admin, pois não pode ficar visível igual */}
-        <View style={styles.selectorContainer}>
-          <TouchableOpacity
-            style={[styles.selectorButton, userType === 'student' && styles.selectorActive]}
-            onPress={() => setUserType('student')}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.keyboardViewContainer}
+    >
+      <SafeAreaView style={styles.safeArea}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            contentContainerStyle={styles.container}
+            keyboardShouldPersistTaps="handled"
           >
-            <Text style={[styles.selectorText, userType === 'student' && styles.textActive]}>ALUNO</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            style={[styles.selectorButton, userType === 'teacher' && styles.selectorActive]}
-            onPress={() => setUserType('teacher')}
-          >
-            <Text style={[styles.selectorText, userType === 'teacher' && styles.textActive]}>PROFESSOR</Text>
-          </TouchableOpacity>
-        </View>
+            
+            {/* --- AGRUPANDO A LOGO E O NOME EDUKATU AQUI --- */}
+            {/* 1. Área do Logo: um Container (View) que agrupa a Imagem e o Texto */}
+            <View style={styles.logoContainer}>
+              <Image 
+                source={LogoImage} 
+                style={styles.logoImage} // Estilo renomeado para a imagem
+                resizeMode="contain" 
+              />
+              <Text style={styles.logoText}>EDU KATÚ</Text> 
+            </View>
+            {/* --- FIM DA MUDANÇA AQUI!!! Sim foi eu welbersued --- */}
 
-        {/* 3. Campos de Formulário pra preencher */}
-        <TextInput
-          style={styles.input}
-          placeholder={userType === 'student' ? "Matrícula ou Email" : "Email do Professor"}
-          placeholderTextColor={COLORS.textSecondary}
-          onChangeText={setEmail}
-          value={email}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          placeholderTextColor={COLORS.textSecondary}
-          onChangeText={setPassword}
-          value={password}
-          secureTextEntry
-        />
 
-        {/* 4. Botão Principal (Login) */}
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginButtonText}>ENTRAR</Text>
-        </TouchableOpacity>
+            {/* 2. Seleção de Perfil (ALUNO / PROFESSOR) - Falta ver como fica o de admin, pois não pode ficar visível igual */}
+            <View style={styles.selectorContainer}>
+              <TouchableOpacity
+                style={[styles.selectorButton, userType === 'student' && styles.selectorActive]}
+                onPress={() => setUserType('student')}
+              >
+                <Text style={[styles.selectorText, userType === 'student' && styles.textActive]}>ALUNO</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={[styles.selectorButton, userType === 'teacher' && styles.selectorActive]}
+                onPress={() => setUserType('teacher')}
+              >
+                <Text style={[styles.selectorText, userType === 'teacher' && styles.textActive]}>PROFESSOR</Text>
+              </TouchableOpacity>
+            </View>
 
-        {/* 5. Link de Redefinição de Senha */}
-        <TouchableOpacity onPress={handleForgotPassword}>
-          <Text style={styles.registerText}>Esqueceu sua senha? Clique aqui para redefinir</Text>
-        </TouchableOpacity>
-      
-      </View>
-    </SafeAreaView>
+            {/* 3. Campos de Formulário pra preencher */}
+            <TextInput
+              style={styles.input}
+              placeholder={userType === 'student' ? "Matrícula ou Email" : "Email do Professor"}
+              placeholderTextColor={COLORS.textSecondary}
+              onChangeText={setEmail}
+              value={email}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Senha"
+              placeholderTextColor={COLORS.textSecondary}
+              onChangeText={setPassword}
+              value={password}
+              secureTextEntry
+            />
+
+            {/* 4. Botão Principal (Login) */}
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+              <Text style={styles.loginButtonText}>ENTRAR</Text>
+            </TouchableOpacity>
+
+            {/* 5. Link de Redefinição de Senha */}
+            <TouchableOpacity onPress={handleForgotPassword}>
+              <Text style={styles.registerText}>Esqueceu sua senha? Clique aqui para redefinir</Text>
+            </TouchableOpacity>
+            
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
 // --- Estilos da Tela de Login ---
 const styles = StyleSheet.create({
-  safeArea: {
+  keyboardViewContainer: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  container: {
+  safeArea: {
     flex: 1,
+  },
+  container: {
+    flexGrow: 1, // Alterado de flex: 1 para flexGrow: 1
     alignItems: 'center',
+    justifyContent: 'center', // Adicionado para centralizar
     padding: SPACING.xLarge,
   },
 
@@ -122,7 +145,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.primary, // Cor Roxa
   },
- 
+  
   
   // Seletor Aluno/Professor
   selectorContainer: {

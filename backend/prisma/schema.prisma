@@ -1,0 +1,78 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+
+
+// =-=-=-=-= ENUM's =-=-=-=-=
+// Tipos de Usuário
+enum UserType{
+  ALUNO
+  PROFESSOR
+  ADMINISTRATOR
+}
+
+
+
+// Tipos de Dificuldade
+enum ActivityDifficult {
+  FACIL
+  MEDIO
+  DIFICIL
+}
+
+
+
+
+model User {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  email   String   @unique // Email do Usuário
+  password String // Vai ser armazenado somente o Token JWT
+  name    String // Nome do Usuário
+  type    UserType // Tipo do Usuário (Aluno, Professor ou ADM)
+  avatar_url String? // URL do avatar
+  date_creation DateTime @default(now())
+  registered Boolean @default(true)
+
+
+  students Student? // Relação com a tabela Student
+  teacher Teacher?  // Relação com a tabela Teacher
+}
+
+model Student {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  
+  // Relação com User
+  user_id String @unique @db.ObjectId
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  // Campos Específicos
+  coins     Int @default(0)     // Moedas Virtuais
+  level     Int @default(1)     // Nível do Aluno
+  grade     String?             // Série do Aluno
+  class     String?             // Sala do Aluno
+  total_activities      Int  @default(0)      // Total de Atividades Realizadas
+  total_coins_earned      Int @default(0)     // Total de Moedas Ganhas
+
+  // Precisa colocar Relação com Rescue
+
+}
+
+model Teacher{
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  
+  // Relação com User
+  user_id   String @unique @db.ObjectId
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  // Campos Específicos
+  main_subject     String?      // Matéria Principal
+  total_created_activities      Int @default(0)     // Total de Atividades Criadas
+}
+

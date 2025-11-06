@@ -27,8 +27,17 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    console.log(`Tentativa de Login como ${userType === 'student' ? 'ALUNO' : 'PROFESSOR'}`);
-    navigation.navigate('Dashboard'); 
+    if (userType === 'student') {
+        console.log("Navegando para o App do Aluno...");
+        // replace para o usuário não "voltar" para o Login
+        navigation.replace('AlunoApp'); 
+    } 
+    else if (userType === 'teacher') {
+        console.log("Navegando para o App do Professor...");
+        // Replace na tela do prof tbm
+        navigation.replace('ProfessorApp'); 
+    }
+    //A lógica do Admin virá aqui depois
   };
 
   const handleForgotPassword = () => {

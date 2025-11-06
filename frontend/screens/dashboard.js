@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import { COLORS, SPACING } from '../styles/theme';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
 
 
 // Dados de Exemplo (Hardcoded)
@@ -38,8 +37,7 @@ const DUMMY_SUBJECTS = [
 
 const DashboardScreen = ({ navigation }) => {
 
-    // --- NOVA FUNÇÃO: LÓGICA DE CORES ---
-    // Esta função decide a cor baseada na sua regra de negócio
+    // cor de acordo com a situação de aluno
     const getSubjectColor = (status) => {
         if (status === 'pendente') {
             return COLORS.error; // Vermelho
@@ -86,9 +84,10 @@ const DashboardScreen = ({ navigation }) => {
                     <View style={styles.coinsContainer}>
                         <Text style={styles.coinsAmount}>0</Text>
                         <MaterialIcons name="monetization-on" size={24} color={COLORS.warning} />
-                        <TouchableOpacity onPress={() => navigation.navigate('Store')}>
-                            <Ionicons name="cart" size={24} color={COLORS.textPrimary} style={{ marginLeft: SPACING.medium }} />
-                        </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate('Ajustes')}>
+                        <MaterialIcons name="settings" size={24} color={COLORS.textPrimary} style={{ marginLeft: SPACING.medium }} />
+                    </TouchableOpacity>
+                    
                     </View>
                 </View>
 

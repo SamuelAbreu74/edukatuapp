@@ -5,7 +5,7 @@ const app = express();
 const PublicRouter = require('./Routes/public.js');
 const PrivateRouter = require('./Routes/private.js')
 const Auth = require('./Middlewares/auth.js')
-const AuthType = require('./Middlewares/authType.js')
+
 
 
 // Para conseguir utilizar o req.body

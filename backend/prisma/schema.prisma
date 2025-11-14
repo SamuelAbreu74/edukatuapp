@@ -18,18 +18,28 @@ enum UserType{
   ADMINISTRATOR
 }
 
-
-
 // Tipos de Dificuldade
-enum ActivityDifficult {
+enum ActivityDifficulty {
   FACIL
   MEDIO
   DIFICIL
 }
 
+// Tipos de Recompensa
+enum RewardType {
+  VIRTUAL
+  FISICA
+}
+
+// Status de Resgate
+enum RescueStatus{
+  PENDENTE
+  APROVADO
+  NEGADO
+}
 
 
-
+// TABELA DE USUÁRIOS
 model User {
   id      String   @id @default(auto()) @map("_id") @db.ObjectId
   email   String   @unique // Email do Usuário
@@ -45,6 +55,8 @@ model User {
   teacher Teacher?  // Relação com a tabela Teacher
 }
 
+
+// TABELA DE ESTUDANTES
 model Student {
   id      String   @id @default(auto()) @map("_id") @db.ObjectId
   
@@ -60,10 +72,10 @@ model Student {
   total_activities      Int  @default(0)      // Total de Atividades Realizadas
   total_coins_earned      Int @default(0)     // Total de Moedas Ganhas
 
-  // Precisa colocar Relação com Rescue
-
+  rescues     Rescue[]
 }
 
+// TABELA DE PROFESSORES
 model Teacher{
   id      String @id @default(auto()) @map("_id") @db.ObjectId
   
@@ -74,5 +86,95 @@ model Teacher{
   // Campos Específicos
   main_subject     String?      // Matéria Principal
   total_created_activities      Int @default(0)     // Total de Atividades Criadas
+
+  // Relação do Professor entre Atividades e Recompensas
+  activities      Activity[]
+  rewards     Reward[]
+}
+
+// TABELA DE ATIVIDADES
+model Activity{
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  description     String? @db.String
+
+  // Relação com Professor
+  teacher_id      String @db.ObjectId
+  teacher     Teacher @relation(fields: [teacher_id], references: [id])
+
+  // Campos Específicos
+  subject     String
+  grade     String?
+  coins_reward      Int @default(10)
+  time      Int @default(10)
+  difficulty    ActivityDifficulty @default(MEDIO)
+  active      Boolean @default(true)
+  creation_date     DateTime @default(now())
+
+  // Relação com Questões
+  questions Question[]
+
+}
+
+// TABELA DE QUESTÃO
+model Question{
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+
+  //Relação com Atividade
+  activity_id     String @db.ObjectId
+  activity      Activity @relation(fields: [activity_id], references: [id], onDelete: Cascade)
+
+  // Campos Específicos
+  question      String @db.String
+  option_a      String
+  option_b      String
+  option_c      String?
+  option_d      String?
+  option_e      String?
+  correct_answer    String @db.String
+  explanation     String? @db.String
+  scores      Int @default(1)
+}
+
+
+// TABELA DE RECOMPENSA
+model Reward{
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  description     String?
+  type      RewardType @default(VIRTUAL)
+  coins_cost      Int
+
+
+  // Relação com Professor
+  teacher_id      String @db.ObjectId
+  teacher     Teacher @relation(fields: [teacher_id], references: [id])
+
+  // Campos Específicos
+  stock     Int @default(-1) // -1 Indica que o estoque é infinito
+  active      Boolean @default(true)
+  creation_date     DateTime @default(now())
+
+  // Relação com Resgates
+  rescues       Rescue[]
+}
+
+model Rescue{
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+
+  // Relação com Aluno
+  student_id      String @db.ObjectId
+  student     Student @relation(fields: [student_id], references: [id])
+
+  // Relação com Recompensa
+  reward_id     String @db.ObjectId
+  reward      Reward @relation(fields: [reward_id], references: [id])
+
+  // Campos Específicos
+  status      RescueStatus @default(PENDENTE)
+  rescue_date     DateTime @default(now())
+  aprove_date     DateTime?
+
+  @@unique([student_id, reward_id]) // Para garantir que um aluno só resgate uma recompensa uma vez
 }
 

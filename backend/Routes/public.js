@@ -15,5 +15,9 @@ router.post('/cadastro', registerController.postRegister) // ROTA PARA CRIA UM N
 // =-=-=-=-= LOGIN =-=-=-=-=
 router.post('/login', loginController.postLogin) // ROTA PARA FAZER O LOGIN
 
+router.get('/', (req, res) => {
+    res.send("Home Page")
+})
+
 
 module.exports = router;

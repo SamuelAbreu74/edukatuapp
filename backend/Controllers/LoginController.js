@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 
 
 
-// ROTAS POR MÉTODO
+// CONTROLLERS POR MÉTODO
 
 // =-=-=-=-= POST =-=-=-=-=
 exports.postLogin = async (req, res) => {
@@ -21,23 +21,29 @@ exports.postLogin = async (req, res) => {
                 return res.status(400).json({message: "Usuário não Encontrado!"})
             }
 
-            console.log("Verificando senha...")
-            
             // Verificando se a senha está correta
-            console.log(result.password)  
             const checkPassword = await bcrypt.compare(userData.password, result.password)
 
             if(!checkPassword){
                 return res.status(400).json({message: "Senha Inválida!"})
             }
-            console.log("Senha verificada!")
-            
+
             // =-=-=-=-= Gerando o Token JWT =-=-=-=-=
+
             // Pegando o JWT_SECRET
             const JWT_SECRET = process.env.JWT_SECRET
 
+            // Chama da função de pegar o Id de acordo com o tipo de usuário (Aluno ou Professor)
+            const roleInfo = await login.getRoleIdByUserId(result.id, result.type)
+
+            // Payload (Dados que vão estar dentro do token)
+            const payload = {id: result.id, type: result.type}
+            if(roleInfo && roleInfo.id){
+                payload[roleInfo.key] = roleInfo.id
+            }
+
             // Aqui Gera o Token propriamente dito
-            const token = jwt.sign({id: result.id, type: result.type}, JWT_SECRET, {expiresIn: '2MIN'})
+            const token = jwt.sign(payload, JWT_SECRET, {expiresIn: '5MIN'})
 
             return res.status(200).json(token)
 

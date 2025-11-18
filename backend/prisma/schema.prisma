@@ -125,14 +125,14 @@ model Question{
   activity      Activity @relation(fields: [activity_id], references: [id], onDelete: Cascade)
 
   // Campos Específicos
-  question      String @db.String
+  question      String 
   option_a      String
   option_b      String
   option_c      String?
   option_d      String?
   option_e      String?
-  correct_answer    String @db.String
-  explanation     String? @db.String
+  correct_answer    String 
+  explanation     String? 
   scores      Int @default(1)
 }
 
@@ -173,7 +173,7 @@ model Rescue{
   // Campos Específicos
   status      RescueStatus @default(PENDENTE)
   rescue_date     DateTime @default(now())
-  aprove_date     DateTime?
+  approve_date     DateTime?
 
   @@unique([student_id, reward_id]) // Para garantir que um aluno só resgate uma recompensa uma vez
 }

@@ -1,6 +1,6 @@
 const studentListModels = require('../Models/StudentListModels.js')
 
-// ROTAS POR MÉTODO    
+// CONTROLLERS POR MÉTODO    
 
 // =-=-=-=-= POST =-=-=-=-=
 exports.getStudents = async (req, res) => {
@@ -12,8 +12,6 @@ exports.getStudents = async (req, res) => {
         
         
     } catch (error) {
-        
+        return res.status(500).json({message: "Erro interno no Servidor!"})
     }
-
-
 }

@@ -3,9 +3,7 @@ const prisma = new PrismaClient()
 
 module.exports = class StudentList{
 
-    // =-=-=-=-= GET =-=-=-=-=
-
-    
+    // =-=-=-=-= GET =-=-=-=-=    
     async get(){
         try {
             const students = await prisma.student.findMany({

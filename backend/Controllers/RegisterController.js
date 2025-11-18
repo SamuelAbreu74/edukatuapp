@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 
 const registerModel = require('../Models/RegisterModels');
 
-// ROTAS POR MÉTODO
+// CONTROLLERS POR MÉTODO
 
 // =-=-=-=-= POST =-=-=-=-=
 exports.postRegister = async (req, res) => {

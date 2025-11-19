@@ -34,7 +34,6 @@ module.exports = class Register {
                         },
                     },
                 })
-                console.log("Função do prisma feita!")
                 return { message: "Aluno adicionado com sucesso!" };
             } else {
                 const newUser = await prisma.user.create({
@@ -43,7 +42,6 @@ module.exports = class Register {
                         password: userData.password,
                         name: userData.name,
                         type: userData.type,
-
                         teacher: {
                             create: {
                                 main_subject: userData.main_subject
@@ -51,12 +49,8 @@ module.exports = class Register {
                         },
                     },
                 });
-
+                return { message: "Professor adicionado com sucesso!"}
             }
-            console.log("Função do prisma feita!")
-            return { message: "Professor adicionado com sucesso!" }
-
-
         } catch (error) {
             console.log(error)
             return "Erro interno no Servidor!"

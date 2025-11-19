@@ -29,7 +29,7 @@ exports.postRegister = async (req, res) => {
 
         const result = await register.post(userData);
        
-        return res.status(200).json(result);
+        return res.status(201).json(result);
 
 
     } catch (error) {

@@ -16,12 +16,12 @@ router.get('/listar-alunos', AuthType(["PROFESSOR"]), studentListController.getS
 
 // =-=-=-=-= ATIVIDADES =-=-=-=-=
 router.get('/atividades', activityController.getActivity) // Listar todas as atividades
+router.get('/minhas-atividades', AuthType(["PROFESSOR"]), activityController.getActivityById) // Listar somente as atividades do usuário logado
 router.post('/atividades', AuthType(["PROFESSOR"]), activityController.postActivity) // Criar uma nova atividade (Professor)
 router.put('/atividades', AuthType(["PROFESSOR"])) // Atualizar somente sua prória atividade (Professor)
-router.delete('/atividades', AuthType(["PROFESSOR"])) // Deletar somente sua própria atividade
+router.delete('/atividades', AuthType(["PROFESSOR"]), activityController.deleteActivity) // Deletar somente sua própria atividade (Professor)
 
 
 
 
 module.exports = router;
-

@@ -6,18 +6,43 @@ const prisma = new PrismaClient()
 module.exports = class ActivityModel {
 
     // =-=-=-=-= GET =-=-=-=-=
+
+    // Método de buscar todas as atividades disponíveis
     async get() {
         try {
             const activities = await prisma.activity.findMany({
+                where: {
+                    active: true
+                },
                 omit: {
                     id: true,
                     teacher_id: true,
-
                 }
             })
             return activities
         } catch (error) {
             console.log(error)
+            return "Erro interno no Servidor!"
+        }
+    }
+
+
+
+    // Método de buscar as atividades pelo ID de professor do usuário logado
+    async getActivity_By_Id(UserData) {
+        try {
+            if (!UserData) {
+                return "Erro ao receber os dados do usuário!"
+            }
+
+            const activities = await prisma.activity.findMany({
+                where: {
+                    teacher_id: UserData.teacher_id
+                }
+            })
+
+            return activities
+        } catch (error) {
             return "Erro interno no Servidor!"
         }
     }
@@ -75,11 +100,19 @@ module.exports = class ActivityModel {
 
 
     // =-=-=-=-= DELETE =-=-=-=-=
-    async delete() {
+    async delete(ActivityId) {
         try {
+            // Função que Deleta a atividade do banco de dados 
+            const activityDeleted = await prisma.activity.delete({
+                where:{
+                    id: ActivityId
+                }
+            })
+            return activityDeleted
 
         } catch (error) {
-
+            console.log(error)
+            return "Erro inteno no Servidor!"
         }
     }
 

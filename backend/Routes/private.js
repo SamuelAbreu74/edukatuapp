@@ -14,13 +14,14 @@ const activityController = require('../Controllers/ActivityController.js')
 router.get('/listar-alunos', AuthType(["PROFESSOR"]), studentListController.getStudents);
 
 
-// =-=-=-=-= ATIVIDADES =-=-=-=-=
-router.get('/atividades', activityController.getActivity) // Listar todas as atividades
+// =-=-=-=-= CRUD ATIVIDADES PROFESSOR =-=-=-=-=
 router.get('/minhas-atividades', AuthType(["PROFESSOR"]), activityController.getActivityById) // Listar somente as atividades do usuário logado
 router.post('/atividades', AuthType(["PROFESSOR"]), activityController.postActivity) // Criar uma nova atividade (Professor)
-router.put('/atividades', AuthType(["PROFESSOR"])) // Atualizar somente sua prória atividade (Professor)
+router.put('/atividades', AuthType(["PROFESSOR"]), activityController.putActivity) // Editar somente sua prória atividade (Professor)
 router.delete('/atividades', AuthType(["PROFESSOR"]), activityController.deleteActivity) // Deletar somente sua própria atividade (Professor)
 
+// =-=-=-=-= ATIVIDADES =-=-=-=-=
+router.get('/atividades', activityController.getActivity) // Listar todas as atividades
 
 
 

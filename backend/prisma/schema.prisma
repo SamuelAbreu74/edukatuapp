@@ -99,7 +99,7 @@ model Activity{
 
   // Relação com Professor
   teacher_id      String @db.ObjectId
-  teacher     Teacher @relation(fields: [teacher_id], references: [id])
+  teacher     Teacher @relation(fields: [teacher_id], references: [id], onDelete: Cascade)
 
   // Campos Específicos
   subject     String
@@ -124,14 +124,14 @@ model Question{
   activity      Activity @relation(fields: [activity_id], references: [id], onDelete: Cascade)
 
   // Campos Específicos
-  question      String 
+  question      String // Texto da Questão
   option_a      String
   option_b      String
   option_c      String?
   option_d      String?
   option_e      String?
   correct_answer    String 
-  explanation     String? 
+  explanation     String?
   scores      Int @default(1)
 }
 

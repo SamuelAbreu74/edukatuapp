@@ -51,6 +51,18 @@ module.exports = class ActivityModel {
     // =-=-=-=-= POST =-=-=-=-=
     async post(ActivityData, UserData) {
         try {
+            // Função que mapeia as questões enviadass e guardar na constante
+            const questionsToCreate = (ActivityData.questions || []).map(question => ({
+                question: question.question,
+                option_a: question.option_a,
+                option_b: question.option_b,
+                option_c: question.option_c,
+                option_d: question.option_d,
+                option_e: question.option_e,
+                correct_answer: question.correct_answer,
+                explanation: question.explanation
+            }));
+
             const newActivity = await prisma.activity.create({
                 data: {
                     title: ActivityData.title,
@@ -69,16 +81,11 @@ module.exports = class ActivityModel {
                     },
                     // Cria uma nova questão juntamente com a nova atividade
                     questions: {
-                        create: [{
-                            question: ActivityData.question,
-                            option_a: ActivityData.option_a,
-                            option_b: ActivityData.option_b,
-                            option_c: ActivityData.option_c,
-                            option_d: ActivityData.option_d,
-                            option_e: ActivityData.option_e,
-                            correct_answer: ActivityData.correct_answer
-                        }]
+                        create: questionsToCreate
                     }
+                },
+                include:{
+                    questions: true
                 }
             })
 
@@ -90,11 +97,54 @@ module.exports = class ActivityModel {
     }
 
     // =-=-=-=-= PUT =-=-=-=-=
-    async put() {
+    async put(ActivityData) {
         try {
+            // Função que mapeia todas as questões enviadas e guarda na constante
+            const questionsToUpdate = (ActivityData.questions || []).map(question => ({
+                where: {
+                    id: question.id // ID da questão que será atualizada
+                },
+                data: {
+                    // Campos da questão que serão atualizados
+                    question: question.question,
+                    option_a: question.option_a,
+                    option_b: question.option_b,
+                    option_c: question.option_c,
+                    option_d: question.option_d,
+                    option_e: question.option_e,
+                    correct_answer: question.correct_answer,
+                    explanation: question.explanation, 
+                    scores: question.scores 
+                }
+            }));
+            
+            // Função que Edita a atividade no Banco de Dados
+            const updatedActivity = await prisma.activity.update({
+                where: {
+                    id: ActivityData.id
+                },
+                data: {
+                    title: ActivityData.title,
+                    description: ActivityData.description,
+                    subject: ActivityData.subject,
+                    grade: ActivityData.grade,
+                    coins_reward: ActivityData.coins_reward,
+                    time: ActivityData.time,
+                    difficulty: ActivityData.difficulty,
+                    active: ActivityData.active,
 
+                    questions: {
+                        update: questionsToUpdate
+                    },   
+                },
+                include:{
+                    questions: true
+                }
+            })
+            return updatedActivity
         } catch (error) {
-
+            console.log(error)
+            return "Erro interno no Servidor!"
         }
     }
 
@@ -104,7 +154,7 @@ module.exports = class ActivityModel {
         try {
             // Função que Deleta a atividade do banco de dados 
             const activityDeleted = await prisma.activity.delete({
-                where:{
+                where: {
                     id: ActivityId
                 }
             })

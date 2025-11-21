@@ -14,7 +14,7 @@ generator client {
 enum UserType{
   ALUNO
   PROFESSOR
-  ADMINISTRATOR
+  ADMINISTRADOR
 }
 
 // Tipos de Dificuldade

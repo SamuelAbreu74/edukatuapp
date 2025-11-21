@@ -1,5 +1,5 @@
 /**
- * @param {string["ALUNO", "PROFESSOR", "ADMINISTRATOR"]} AcessTypes - Array de strings com os tipos de usuário permitidos.
+ * @param {string["ALUNO", "PROFESSOR", "ADMINISTRADOR"]} AcessTypes - Array de strings com os tipos de usuário permitidos.
  */
 
 const AuthType = (AcessTypes) => {

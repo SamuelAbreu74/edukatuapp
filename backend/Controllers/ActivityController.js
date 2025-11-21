@@ -31,8 +31,6 @@ exports.getActivityById = async (req, res) => {
     }
 }
 
-
-
 // =-=-=-=-= POST =-=-=-=-=
 exports.postActivity = async (req, res) => {
     try {
@@ -54,6 +52,25 @@ exports.postActivity = async (req, res) => {
 
 // =-=-=-=-= PUT =-=-=-=-=
 exports.putActivity = async (req, res) => {
+    try {
+    const user_teacher_id = req.user.teacher_id;
+    const activity_data = req.body // O front deve passar todas os dados da atividade que ele quer editar
+
+        if(!activity_data || !user_teacher_id){
+            return res.status(400).json({message: "Sem dados necessários para realizar a operação!"})
+        }
+
+        if(user_teacher_id != activity_data.teacher_id){
+            return res.status(401).json({message: "Só é possível editar suas próprias atividades!"})
+        }
+
+        const updatedActivity = await ActivityModel.put(activity_data)
+        return res.status(200).json({message: "Atividade Editada com Sucesso!", updatedActivity})
+
+    } catch (error) {
+        
+    }
+
 
 }
 

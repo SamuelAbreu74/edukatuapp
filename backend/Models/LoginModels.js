@@ -16,7 +16,6 @@ module.exports = class Login{
 // =-=-=-=-= POST =-=-=-=-=
     async post(userData){
         try {
-            console.log("Verificando email...")
             // Verificando se o Email existe no Banco
             const login = await prisma.user.findUnique({
                 where: {email: userData.email}
@@ -54,5 +53,4 @@ module.exports = class Login{
             return "Erro interno no Servidor!"
         } 
     }
-
 }

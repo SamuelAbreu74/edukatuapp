@@ -3,6 +3,7 @@
 //adicionado alguns comentários sei lá
 
 import React, { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { 
     View, 
     Text, 
@@ -16,33 +17,72 @@ import {
     ScrollView,
     TouchableWithoutFeedback,
     Keyboard,
-    Platform
+    Platform,
+    Alert,
+    ActivityIndicator
 } from 'react-native';
 import { COLORS, SPACING } from '../styles/theme'; 
 import LogoImage from '../../assets/bemvindomascote.png'; // Logo da tela de login aqui viusss
+
+import { API_URL } from '../config/api';
 
 const LoginScreen = ({ navigation }) => {
   const [userType, setUserType] = useState('student'); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    if (userType === 'student') {
-        console.log("Navegando para o App do Aluno...");
-        // replace para o usuário não "voltar" para o Login
-        navigation.replace('AlunoApp'); 
-    } 
-    else if (userType === 'teacher') {
-        console.log("Navegando para o App do Professor...");
-        // Replace na tela do prof tbm
-        navigation.replace('ProfessorApp'); 
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+        Alert.alert('Atenção', 'Por favor, preencha e-mail e senha.');
+        return;
     }
-    //A lógica do Admin virá aqui depois
+
+    setLoading(true);
+    Keyboard.dismiss();
+
+    try {
+        console.log(`Tentando logar em: ${API_URL}/login`);
+
+        const response = await fetch(`${API_URL}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: email,
+                password: password,
+                type: userType === 'student' ? 'ALUNO' : 'PROFESSOR'
+            }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log('Login realizado:', data);
+
+            await AsyncStorage.setItem('userToken', data);
+
+            if (userType === 'student') {
+                navigation.replace('AlunoApp');
+            } else {
+                navigation.replace('ProfessorApp');
+            }
+        } else {
+            Alert.alert('Erro', data.message || 'Login falhou.');
+        }
+
+    } catch (error) {
+        console.error(error);
+        Alert.alert('Erro de Conexão', 'Não foi possível conectar ao servidor. Verifique se o Back-end está rodando.');
+    } finally {
+        setLoading(false);
+    }
   };
 
   const handleForgotPassword = () => {
     console.log("Usuário clicou em 'Esqueceu a senha'");
     // adicionar posteriormente: navigation.navigate('ForgotPasswordScreen');
+    Alert.alert('Redefinir Senha', 'Contate a secretaria.');
   };
 
   return (
@@ -62,7 +102,7 @@ const LoginScreen = ({ navigation }) => {
             <View style={styles.logoContainer}>
               <Image 
                 source={LogoImage} 
-                style={styles.logoImage} // Estilo renomeado para a imagem
+                style={styles.logoImage} 
                 resizeMode="contain" 
               />
               <Text style={styles.logoText}>EDU KATÚ</Text> 
@@ -70,7 +110,7 @@ const LoginScreen = ({ navigation }) => {
             {/* --- FIM DA MUDANÇA AQUI!!! Sim foi eu welbersued --- */}
 
 
-            {/* 2. Seleção de Perfil (ALUNO / PROFESSOR) - Falta ver como fica o de admin, pois não pode ficar visível igual */}
+            {/* 2. Seleção de Perfil (ALUNO / PROFESSOR) */}
             <View style={styles.selectorContainer}>
               <TouchableOpacity
                 style={[styles.selectorButton, userType === 'student' && styles.selectorActive]}
@@ -107,8 +147,16 @@ const LoginScreen = ({ navigation }) => {
             />
 
             {/* 4. Botão Principal (Login) */}
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-              <Text style={styles.loginButtonText}>ENTRAR</Text>
+            <TouchableOpacity 
+                style={styles.loginButton} 
+                onPress={handleLogin}
+                disabled={loading}
+            >
+              {loading ? (
+                  <ActivityIndicator color={COLORS.background} />
+              ) : (
+                  <Text style={styles.loginButtonText}>ENTRAR</Text>
+              )}
             </TouchableOpacity>
 
             {/* 5. Link de Redefinição de Senha */}
@@ -133,30 +181,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
-    flexGrow: 1, // Alterado de flex: 1 para flexGrow: 1
+    flexGrow: 1, 
     alignItems: 'center',
-    justifyContent: 'center', // Adicionado para centralizar
+    justifyContent: 'center', 
     padding: SPACING.xLarge,
   },
-
-  
   logoContainer: {
-    alignItems: 'center', // Centraliza a imagem e o texto
-    marginBottom: SPACING.xLarge, // Mantém o espaçamento principal
+    alignItems: 'center', 
+    marginBottom: SPACING.xLarge, 
   },
-  logoImage: { // Parametros da imagem)
+  logoImage: { 
     width: 250, 
     height: 220, 
-    marginBottom: SPACING.small, // Espaço entre a imagem e o texto
+    marginBottom: SPACING.small, 
   },
   logoText: { 
     fontSize: 28,
     fontWeight: 'bold',
-    color: COLORS.primary, // Cor Roxa
+    color: COLORS.primary, 
   },
-  
-  
-  // Seletor Aluno/Professor
   selectorContainer: {
     flexDirection: 'row',
     backgroundColor: '#EBEBEB',
@@ -171,17 +214,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selectorActive: {
-    backgroundColor: COLORS.primary, // Roxo Principal
+    backgroundColor: COLORS.primary, 
   },
   selectorText: {
     color: COLORS.textSecondary,
     fontWeight: '600',
   },
   textActive: {
-    color: COLORS.background, // Branco
+    color: COLORS.background, 
   },
-
-  // Inputs
   input: {
     width: '100%',
     height: 50,
@@ -192,12 +233,10 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.medium,
     color: COLORS.textPrimary,
   },
-
-  // Botão Login
   loginButton: {
     width: '100%',
     height: 50,
-    backgroundColor: COLORS.primary, // Roxo Principal
+    backgroundColor: COLORS.primary, 
     borderRadius: SPACING.small,
     justifyContent: 'center',
     alignItems: 'center',
@@ -205,12 +244,12 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.large,
   },
   loginButtonText: {
-    color: COLORS.background, // Branco
+    color: COLORS.background, 
     fontSize: 18,
     fontWeight: 'bold',
   },
   registerText: {
-    color: COLORS.secondary, // Laranja/Fúcsia para links
+    color: COLORS.secondary, 
     fontWeight: '600',
   }
 });

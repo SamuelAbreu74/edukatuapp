@@ -72,6 +72,7 @@ model Student {
   total_coins_earned      Int @default(0)     // Total de Moedas Ganhas
 
   rescues     Rescue[]
+  attempt Attempt[]
 }
 
 // TABELA DE PROFESSORES
@@ -112,7 +113,7 @@ model Activity{
 
   // Relação com Questões
   questions Question[]
-
+  attempt Attempt[]
 }
 
 // TABELA DE QUESTÃO
@@ -177,3 +178,28 @@ model Rescue{
   @@unique([student_id, reward_id]) // Para garantir que um aluno só resgate uma recompensa uma vez
 }
 
+// TABELA DE TENTIVA DE QUESTÃO DO ALUNO
+model Attempt{
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+
+  // Relação com Aluno
+  student_id     String @db.ObjectId
+  student     Student @relation(fields: [student_id], references: [id])
+
+
+  // Relação com Atividade
+  activity_id     String @db.ObjectId
+  activity      Activity @relation(fields: [activity_id], references: [id])
+
+  // Resposta
+  student_answers Json 
+
+  // Campos Específicos
+  score       Int @default(0) 
+  score_count     Int @default(0)
+  total_questions     Int
+  is_completed      Boolean @default(false)
+
+  submitted_at      DateTime @default(now())
+
+}

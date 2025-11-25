@@ -7,8 +7,6 @@ generator client {
 }
 
 
-
-
 // =-=-=-=-= ENUM's =-=-=-=-=
 // Tipos de Usuário
 enum UserType{

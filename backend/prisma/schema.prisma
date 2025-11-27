@@ -191,7 +191,7 @@ model Attempt{
   activity      Activity @relation(fields: [activity_id], references: [id])
 
   // Resposta
-  student_answers Json 
+  student_answers Json[] 
 
   // Campos Específicos
   score       Int @default(0) 

@@ -16,10 +16,10 @@ exports.getActivity = async (req, res) => {
 }
 
 // =-=-=-=-= GET por Id =-=-=-=-= (Para pegar somente as atividades que o próprio professor criou)
-exports.getActivityById = async (req, res) => {
+exports.getActivityByTeacherId = async (req, res) => {
     try {
         const user_data = req.user;
-        const activities_by_id = await ActivityModel.getActivity_By_Id(user_data)
+        const activities_by_id = await ActivityModel.getActivity_By_Teacher_Id(user_data)
 
         if (activities_by_id.length == 0) {
             return res.status(200).json({ message: "Você ainda não criou nenhuma atividade!" })

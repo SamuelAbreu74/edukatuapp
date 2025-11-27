@@ -15,8 +15,7 @@ module.exports = class ActivityModel {
                     active: true
                 },
                 omit: {
-                    id: true,
-                    teacher_id: true,
+                    teacher_id: true
                 }
             })
             return activities
@@ -29,7 +28,7 @@ module.exports = class ActivityModel {
 
 
     // Método de buscar as atividades pelo ID de professor do usuário logado
-    async getActivity_By_Id(UserData) {
+    async getActivity_By_Teacher_Id(UserData) {
         try {
             if (!UserData) {
                 return "Erro ao receber os dados do usuário!"
@@ -47,8 +46,32 @@ module.exports = class ActivityModel {
         }
     }
 
+    // Método para buscar a atividade pelo ID da Atividade
+    async getActivity_By_Activity_Id(ActivityId){
+            if(!ActivityId){
+                return "Erro ao receber os dados da atividade!"
+            }
+            
+        try {
+
+            const result = await prisma.activity.findUnique({
+                where: {
+                    id: ActivityId
+                },include:{
+                    questions: true
+                }
+            })
+
+            return result
+        } catch (error) {
+            console.log(error)
+            return "Erro interno no Servidor!"
+        }
+    }
+
 
     // =-=-=-=-= POST =-=-=-=-=
+    // Função que Cria uma nova atividade
     async post(ActivityData, UserData) {
         try {
             // Função que mapeia as questões enviadass e guardar na constante
@@ -97,6 +120,7 @@ module.exports = class ActivityModel {
     }
 
     // =-=-=-=-= PUT =-=-=-=-=
+    // Função que Atualiza uma atividade existente
     async put(ActivityData) {
         try {
             // Função que mapeia todas as questões enviadas e guarda na constante
@@ -150,6 +174,7 @@ module.exports = class ActivityModel {
 
 
     // =-=-=-=-= DELETE =-=-=-=-=
+    // Função que Deleta uma atividade
     async delete(ActivityId) {
         try {
             // Função que Deleta a atividade do banco de dados 

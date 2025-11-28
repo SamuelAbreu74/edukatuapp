@@ -22,6 +22,20 @@ module.exports = class AttemptModel {
         }
     }
 
+    async getAttempt_by_Student_Id(student_id){
+        try {
+            const result = await prisma.attempt.findMany({
+                where:{
+                    student_id: student_id
+                }
+            })
+
+            return result
+        } catch (error) {
+            return "Erro interno no Servidor!"
+        }
+    }
+
 
     // =-=-=-=-= POST =-=-=-=-= (Para o enviar as respostas da atividade feita pelo aluno)
     async post(data) {

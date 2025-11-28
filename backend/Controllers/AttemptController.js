@@ -7,6 +7,27 @@ const ActivityModel = new activityModel()
 // Controllers por Métodos
 
 
+// =-=-=-=-= GET =-=-=-=-=
+exports.getAll_By_Student_Id = async (req, res) => {
+    try {
+        const student_id = req.params.id 
+        const attemptsHistory =  await AttemptModel.getAttempt_by_Student_Id(student_id)
+
+        if(!student_id){
+            res.status(400).json({message: "Sem os dados necessários para realizar a operação"})
+        }
+
+        if(attemptsHistory.length <= 0){
+            return res.status(200).json({message: "Você ainda não realizou nenhuma tentativa de atividade!"})
+        }
+
+        return res.status(200).json({message: "Histórico de Tentativas Listado com Sucesso!", history: attemptsHistory})
+        
+    } catch (error) {
+        return res.status(500).json({message: "Erro interno no Servidor!"})
+    }
+} 
+
 // =-=-=-=-= POST =-=-=-=-=
 exports.postAttempt = async (req, res) => {
     const data = req.body // student_id, activity_id

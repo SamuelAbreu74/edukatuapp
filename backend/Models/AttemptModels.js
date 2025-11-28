@@ -1,4 +1,4 @@
-const {PrismaClient} = require('@prisma/client')
+const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 
@@ -7,27 +7,27 @@ module.exports = class AttemptModel {
 
 
     // =-=-=-=-= GET =-=-=-=-=
-    async getAttempt_by_Id(attemptId){
+    async getAttempt_by_Id(attemptId) {
         try {
             const result = await prisma.attempt.findUnique({
-                where:{
+                where: {
                     id: attemptId
-                },select:{
-                    id: true, student_answers: true
+                }, select: {
+                    id: true, student_answers: true, is_completed: true
                 }
             })
             return result
         } catch (error) {
             return "Erro interno no Servidor!"
         }
-    } 
+    }
 
 
     // =-=-=-=-= POST =-=-=-=-= (Para o enviar as respostas da atividade feita pelo aluno)
-    async post(data){
+    async post(data) {
         try {
             const result = await prisma.attempt.create({
-                data:{
+                data: {
                     student_id: data.student_id,
                     activity_id: data.activity_id,
                     // Inicializa o array respostas
@@ -39,21 +39,23 @@ module.exports = class AttemptModel {
             return result
 
         } catch (error) {
-          return "Erro interno no Servidor!"  
+            return "Erro interno no Servidor!"
         }
     }
 
     // =-=-=-=-= PUT =-=-=-=-= 
-    async put(attemptId, currentAnswers){
+    async put(attemptId, currentAnswers, is_completed, scores) {
         try {
             const result = await prisma.attempt.update({
                 where: {
                     id: attemptId
                 },
-                data:{
-                    student_answers: currentAnswers
+                data: {
+                    student_answers: currentAnswers,
+                    is_completed: is_completed,
+                    score: scores
                 }
-            }) 
+            })
             return result
 
         } catch (error) {

@@ -21,7 +21,11 @@ router.delete('/atividades', AuthType(["PROFESSOR"]), activityController.deleteA
 
 // =-=-=-=-= CRUD ATIVIDADES ALUNOS =-=-=-=-=
 router.get('/atividades', activityController.getActivity) // Listar todas as atividades
-router.post('/atividades/tentativa', AuthType(["ALUNO"]), attemptController.postAttempt) // Cria um novo registro de tentativa que será atualizado enquanto a atividade é feita 
-router.put('/atividades/:id/tentativa', AuthType(["ALUNO"]), attemptController.putAttempt)
 
+
+
+// =-=-=-=-= TENTATIVAS =-=-=-=-=
+router.post('/atividades/tentativa', AuthType(["ALUNO"]), attemptController.postAttempt) // Cria um novo registro de tentativa que será atualizado enquanto a atividade é feita 
+router.put('/atividades/:id/tentativa', AuthType(["ALUNO"]), attemptController.putAttempt) // Atualiza o registro da tentativa que foi criada baseado no ID que é passado pelo parêmetro
+router.get('/:id/historico-de-tentativas', AuthType(["ALUNO"]), attemptController.getAll_By_Student_Id) // Lista todo o histórico de tentativas realizado pelo aluno que o ID se refere
 module.exports = router;

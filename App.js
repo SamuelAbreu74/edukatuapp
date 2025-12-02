@@ -1,13 +1,11 @@
-// Arquivo: EduKatuApp/App.js (NA RAIZ)
-import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-// Stack principal)
-import AppNavigator from './frontend/navigation/AppNavigator'; 
+import React from 'react';
+import AppNavigator from './frontend/navigation/AppNavigator';
+import { ThemeProvider } from './frontend/context/ThemeContext';
 
 export default function App() {
   return (
-    <NavigationContainer>
+    <ThemeProvider>
       <AppNavigator />
-    </NavigationContainer>
+    </ThemeProvider>
   );
 }

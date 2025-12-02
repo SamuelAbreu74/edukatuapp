@@ -1,6 +1,9 @@
 import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import LoginScreen from '../screens/loginscreen';
+
+// Seus imports de telas
+import LoginScreen from '../screens/loginscreen'; 
 import AlunoTabNavigator from './AlunoTabNavigator';
 import ProfessorTabNavigator from './ProfessorTabNavigator';
 import SettingsScreen from '../screens/SettingsScreen';
@@ -8,9 +11,8 @@ import SettingsScreen from '../screens/SettingsScreen';
 const Stack = createNativeStackNavigator();
 
 function AppNavigator() {
-  const isAuthenticated = false; 
-
   return (
+    <NavigationContainer>
       <Stack.Navigator 
         initialRouteName="Login"
         screenOptions={{ headerShown: false }} 
@@ -20,7 +22,7 @@ function AppNavigator() {
         <Stack.Screen name="ProfessorApp" component={ProfessorTabNavigator} />
         <Stack.Screen name="Ajustes" component={SettingsScreen} />
       </Stack.Navigator>
-  
+    </NavigationContainer>
   );
 }
 

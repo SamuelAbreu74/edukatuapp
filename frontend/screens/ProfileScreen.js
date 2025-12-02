@@ -1,25 +1,57 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
-import { COLORS, SPACING } from '../styles/theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTheme } from '../context/ThemeContext';
+import { SPACING } from '../styles/theme';
+import { Ionicons } from '@expo/vector-icons';
 
 import AvatarImage from '../../assets/bemvindomascote.png'; 
 
 const ProfileScreen = ({ navigation }) => {
+  const { colors, theme, toggleTheme } = useTheme();
+  const [userEmail, setUserEmail] = useState('aluno@edukatu.com');
+  const [userName, setUserName] = useState('Aluno');
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem('userToken');
+        if (jsonValue) {
+          const userData = JSON.parse(jsonValue);
+          
+          if (userData?.email) {
+            setUserEmail(userData.email);
+          } else if (userData?.user?.email) {
+            setUserEmail(userData.user.email);
+          } else if (userData?.data?.email) {
+            setUserEmail(userData.data.email);
+          }
+
+          if (userData?.name) {
+             setUserName(userData.name);
+          } else if (userData?.user?.name) {
+             setUserName(userData.user.name);
+          }
+        }
+      } catch (e) {
+      
+      }
+    };
+
+    getUserData();
+  }, []);
 
   const handleLogout = () => {
     Alert.alert(
       "Sair",
       "Tem certeza que deseja sair?",
       [
-        {
-          text: "Cancelar",
-          style: "cancel"
-        },
+        { text: "Cancelar", style: "cancel" },
         { 
           text: "Sair", 
           style: "destructive",
-          onPress: () => {
-            // Reseta o histórico e volta para o Login
+          onPress: async () => {
+            await AsyncStorage.removeItem('userToken');
             navigation.reset({
               index: 0,
               routes: [{ name: 'Login' }],
@@ -31,30 +63,40 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       
-      {/* Cabeçalho do Perfil */}
-      <View style={styles.header}>
+      <View style={styles.themeHeader}>
+         <TouchableOpacity onPress={toggleTheme} style={styles.themeButton}>
+           <Ionicons 
+              name={theme === 'light' ? 'moon' : 'sunny'} 
+              size={28} 
+              color={colors.iconColor} 
+           />
+         </TouchableOpacity>
+      </View>
+
+      <View style={[styles.header, { backgroundColor: colors.cardBackground }]}>
         <Image source={AvatarImage} style={styles.avatar} resizeMode="contain" />
-        <Text style={styles.name}>Usuário Teste</Text>
-        <Text style={styles.email}>aluno@edukatu.com</Text>
+        <Text style={[styles.name, { color: colors.text }]}>{userName}</Text>
+        <Text style={[styles.email, { color: colors.placeholder }]}>{userEmail}</Text>
       </View>
 
-      {/* Lista de Opções (Sem Configurações) */}
       <View style={styles.body}>
-        <TouchableOpacity style={styles.menuItem} onPress={() => console.log("Editar Perfil")}>
-          <Text style={styles.menuText}>Editar Dados</Text>
+        <TouchableOpacity style={[styles.menuItem, { backgroundColor: colors.cardBackground }]} onPress={() => {}}>
+          <Text style={[styles.menuText, { color: colors.text }]}>Editar Dados</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem} onPress={() => console.log("Histórico")}>
-          <Text style={styles.menuText}>Meu Histórico</Text>
+        <TouchableOpacity style={[styles.menuItem, { backgroundColor: colors.cardBackground }]} onPress={() => {}}>
+          <Text style={[styles.menuText, { color: colors.text }]}>Meu Histórico</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Botão de Logout */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>SAIR DA CONTA</Text>
+        <TouchableOpacity 
+            style={[styles.logoutButton, { backgroundColor: colors.cardBackground, borderColor: colors.secondary }]} 
+            onPress={handleLogout}
+        >
+          <Text style={[styles.logoutText, { color: colors.secondary }]}>SAIR DA CONTA</Text>
         </TouchableOpacity>
       </View>
 
@@ -65,12 +107,20 @@ const ProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+  },
+  themeHeader: {
+    width: '100%',
+    alignItems: 'flex-end',
+    paddingHorizontal: SPACING.large,
+    paddingTop: 40,
+    paddingBottom: 10,
+  },
+  themeButton: {
+    padding: SPACING.small,
   },
   header: {
     alignItems: 'center',
     padding: SPACING.xLarge,
-    backgroundColor: COLORS.background,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     elevation: 2,
@@ -89,11 +139,9 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: COLORS.textPrimary,
   },
   email: {
     fontSize: 16,
-    color: COLORS.textSecondary,
     marginBottom: SPACING.small,
   },
   body: {
@@ -101,7 +149,6 @@ const styles = StyleSheet.create({
     padding: SPACING.medium,
   },
   menuItem: {
-    backgroundColor: COLORS.background,
     padding: SPACING.medium,
     borderRadius: SPACING.small,
     marginBottom: SPACING.small,
@@ -110,21 +157,17 @@ const styles = StyleSheet.create({
   },
   menuText: {
     fontSize: 16,
-    color: COLORS.textPrimary,
   },
   footer: {
     padding: SPACING.large,
   },
   logoutButton: {
-    backgroundColor: '#FFF',
     padding: SPACING.medium,
     borderRadius: SPACING.small,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#FF4D4D', 
   },
   logoutText: {
-    color: '#FF4D4D',
     fontWeight: 'bold',
     fontSize: 16,
   }

@@ -1,3 +1,5 @@
+// Arquivo: frontend/screens/LoginScreen.js
+
 //Tela de Login
 
 //adicionado alguns comentários sei lá
@@ -21,12 +23,22 @@ import {
     Alert,
     ActivityIndicator
 } from 'react-native';
-import { COLORS, SPACING } from '../styles/theme'; 
+import { Ionicons } from '@expo/vector-icons'; 
 import LogoImage from '../../assets/bemvindomascote.png'; // Logo da tela de login aqui viusss
 
 import { API_URL } from '../config/api';
+import { useTheme } from '../context/ThemeContext';
+
+const SPACING = {
+  small: 8,
+  medium: 16,
+  large: 24,
+  xLarge: 32,
+};
 
 const LoginScreen = ({ navigation }) => {
+  const { colors, theme, toggleTheme } = useTheme();
+
   const [userType, setUserType] = useState('student'); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -60,7 +72,7 @@ const LoginScreen = ({ navigation }) => {
         if (response.ok) {
             console.log('Login realizado:', data);
 
-            await AsyncStorage.setItem('userToken', data);
+            await AsyncStorage.setItem('userToken', JSON.stringify(data));
 
             if (userType === 'student') {
                 navigation.replace('AlunoApp');
@@ -88,9 +100,20 @@ const LoginScreen = ({ navigation }) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.keyboardViewContainer}
+      style={[styles.keyboardViewContainer, { backgroundColor: colors.background }]}
     >
       <SafeAreaView style={styles.safeArea}>
+        
+        <View style={styles.headerContainer}>
+           <TouchableOpacity onPress={toggleTheme} style={styles.themeButton}>
+             <Ionicons 
+                name={theme === 'light' ? 'moon' : 'sunny'} 
+                size={28} 
+                color={colors.iconColor} 
+             />
+           </TouchableOpacity>
+        </View>
+
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView
             contentContainerStyle={styles.container}
@@ -105,42 +128,68 @@ const LoginScreen = ({ navigation }) => {
                 style={styles.logoImage} 
                 resizeMode="contain" 
               />
-              <Text style={styles.logoText}>EDU KATÚ</Text> 
+              <Text style={[styles.logoText, { color: colors.primary }]}>EDU KATÚ</Text> 
             </View>
             {/* --- FIM DA MUDANÇA AQUI!!! Sim foi eu welbersued --- */}
 
 
             {/* 2. Seleção de Perfil (ALUNO / PROFESSOR) */}
-            <View style={styles.selectorContainer}>
+            <View style={[styles.selectorContainer, { backgroundColor: colors.selectorInactive }]}>
               <TouchableOpacity
-                style={[styles.selectorButton, userType === 'student' && styles.selectorActive]}
+                style={[
+                    styles.selectorButton, 
+                    userType === 'student' && { backgroundColor: colors.primary }
+                ]}
                 onPress={() => setUserType('student')}
               >
-                <Text style={[styles.selectorText, userType === 'student' && styles.textActive]}>ALUNO</Text>
+                <Text style={[
+                    styles.selectorText, 
+                    { color: userType === 'student' ? colors.buttonText : colors.text }
+                ]}>ALUNO</Text>
               </TouchableOpacity>
               
               <TouchableOpacity
-                style={[styles.selectorButton, userType === 'teacher' && styles.selectorActive]}
+                style={[
+                    styles.selectorButton, 
+                    userType === 'teacher' && { backgroundColor: colors.primary }
+                ]}
                 onPress={() => setUserType('teacher')}
               >
-                <Text style={[styles.selectorText, userType === 'teacher' && styles.textActive]}>PROFESSOR</Text>
+                <Text style={[
+                    styles.selectorText, 
+                    { color: userType === 'teacher' ? colors.buttonText : colors.text }
+                ]}>PROFESSOR</Text>
               </TouchableOpacity>
             </View>
 
             {/* 3. Campos de Formulário pra preencher */}
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input, 
+                { 
+                  backgroundColor: colors.inputBackground, 
+                  borderColor: colors.inputBorder,
+                  color: colors.text 
+                }
+              ]}
               placeholder={userType === 'student' ? "Matrícula ou Email" : "Email do Professor"}
-              placeholderTextColor={COLORS.textSecondary}
+              placeholderTextColor={colors.placeholder}
               onChangeText={setEmail}
               value={email}
               keyboardType="email-address"
               autoCapitalize="none"
             />
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                { 
+                  backgroundColor: colors.inputBackground, 
+                  borderColor: colors.inputBorder,
+                  color: colors.text 
+                }
+              ]}
               placeholder="Senha"
-              placeholderTextColor={COLORS.textSecondary}
+              placeholderTextColor={colors.placeholder}
               onChangeText={setPassword}
               value={password}
               secureTextEntry
@@ -148,20 +197,20 @@ const LoginScreen = ({ navigation }) => {
 
             {/* 4. Botão Principal (Login) */}
             <TouchableOpacity 
-                style={styles.loginButton} 
+                style={[styles.loginButton, { backgroundColor: colors.primary }]} 
                 onPress={handleLogin}
                 disabled={loading}
             >
               {loading ? (
-                  <ActivityIndicator color={COLORS.background} />
+                  <ActivityIndicator color={colors.buttonText} />
               ) : (
-                  <Text style={styles.loginButtonText}>ENTRAR</Text>
+                  <Text style={[styles.loginButtonText, { color: colors.buttonText }]}>ENTRAR</Text>
               )}
             </TouchableOpacity>
 
             {/* 5. Link de Redefinição de Senha */}
             <TouchableOpacity onPress={handleForgotPassword}>
-              <Text style={styles.registerText}>Esqueceu sua senha? Clique aqui para redefinir</Text>
+              <Text style={[styles.registerText, { color: colors.secondary }]}>Esqueceu sua senha? Clique aqui para redefinir</Text>
             </TouchableOpacity>
             
           </ScrollView>
@@ -173,9 +222,19 @@ const LoginScreen = ({ navigation }) => {
 
 // --- Estilos da Tela de Login ---
 const styles = StyleSheet.create({
+  headerContainer: {
+    width: '100%',
+    alignItems: 'flex-end',
+    paddingHorizontal: SPACING.large,
+    marginTop: 40,
+    marginRight: 10,
+    zIndex: 1, 
+  },
+  themeButton: {
+    padding: SPACING.small,
+  },
   keyboardViewContainer: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   safeArea: {
     flex: 1,
@@ -198,11 +257,9 @@ const styles = StyleSheet.create({
   logoText: { 
     fontSize: 28,
     fontWeight: 'bold',
-    color: COLORS.primary, 
   },
   selectorContainer: {
     flexDirection: 'row',
-    backgroundColor: '#EBEBEB',
     borderRadius: 50,
     marginBottom: SPACING.large,
     width: '100%',
@@ -213,30 +270,20 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignItems: 'center',
   },
-  selectorActive: {
-    backgroundColor: COLORS.primary, 
-  },
   selectorText: {
-    color: COLORS.textSecondary,
     fontWeight: '600',
-  },
-  textActive: {
-    color: COLORS.background, 
   },
   input: {
     width: '100%',
     height: 50,
-    borderColor: '#CCCCCC',
     borderWidth: 1,
     borderRadius: SPACING.small,
     paddingHorizontal: SPACING.medium,
     marginBottom: SPACING.medium,
-    color: COLORS.textPrimary,
   },
   loginButton: {
     width: '100%',
     height: 50,
-    backgroundColor: COLORS.primary, 
     borderRadius: SPACING.small,
     justifyContent: 'center',
     alignItems: 'center',
@@ -244,12 +291,10 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.large,
   },
   loginButtonText: {
-    color: COLORS.background, 
     fontSize: 18,
     fontWeight: 'bold',
   },
   registerText: {
-    color: COLORS.secondary, 
     fontWeight: '600',
   }
 });

@@ -10,9 +10,9 @@ import {
     TouchableOpacity, 
     FlatList 
 } from 'react-native';
-import { COLORS, SPACING } from '../styles/theme';
 import { MaterialIcons } from '@expo/vector-icons';
-
+import { useTheme } from '../context/ThemeContext';
+import { SPACING } from '../styles/theme';
 
 // Dados de Exemplo (Hardcoded)
 const DUMMY_ACTIVITIES = [
@@ -36,24 +36,27 @@ const DUMMY_SUBJECTS = [
 // --- FIM DA MUDANÇA ---
 
 const DashboardScreen = ({ navigation }) => {
+    const { colors, theme } = useTheme();
 
     // cor de acordo com a situação de aluno
     const getSubjectColor = (status) => {
+        const isDark = theme === 'dark';
+
         if (status === 'pendente') {
-            return COLORS.error; // Vermelho
+            return isDark ? '#B71C1C' : '#F44336'; // Vermelho
         }
         if (status === 'alerta') {
-            return COLORS.warning; // Amarelo/Laranja
+            return isDark ? '#E65100' : '#FF9800'; // Laranja
         }
         // O padrão (status 'em_dia') é Verde
-        return COLORS.success; 
+        return isDark ? '#1B5E20' : '#4CAF50'; 
     };
     // --- FIM DA NOVA FUNÇÃO ---
 
     const renderRecentActivity = ({ item }) => (
-        <TouchableOpacity style={styles.recentActivityCard}>
-            <Text style={styles.recentActivityTitle}>{item.title}</Text>
-            <Text style={styles.recentActivityProfessor}>{item.professor}</Text>
+        <TouchableOpacity style={[styles.recentActivityCard, { backgroundColor: colors.cardBackground }]}>
+            <Text style={[styles.recentActivityTitle, { color: colors.text }]}>{item.title}</Text>
+            <Text style={[styles.recentActivityProfessor, { color: colors.placeholder }]}>{item.professor}</Text>
         </TouchableOpacity>
     );
 
@@ -76,22 +79,22 @@ const DashboardScreen = ({ navigation }) => {
     // --- FIM DA MUDANÇA ---
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 
                 <View style={styles.header}>
-                    <Text style={styles.headerGreeting}>Olá, Welber!</Text>
+                    <Text style={[styles.headerGreeting, { color: colors.primary }]}>Olá, Welber!</Text>
                     <View style={styles.coinsContainer}>
-                        <Text style={styles.coinsAmount}>0</Text>
-                        <MaterialIcons name="monetization-on" size={24} color={COLORS.warning} />
+                        <Text style={[styles.coinsAmount, { color: colors.secondary }]}>0</Text>
+                        <MaterialIcons name="monetization-on" size={24} color={colors.secondary} />
                     <TouchableOpacity onPress={() => navigation.navigate('Ajustes')}>
-                        <MaterialIcons name="settings" size={24} color={COLORS.textPrimary} style={{ marginLeft: SPACING.medium }} />
+                        <MaterialIcons name="settings" size={24} color={colors.text} style={{ marginLeft: SPACING.medium }} />
                     </TouchableOpacity>
                     
                     </View>
                 </View>
 
-                <Text style={styles.sectionTitle}>ATIVIDADES RECENTES</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>ATIVIDADES RECENTES</Text>
                 <FlatList
                     data={DUMMY_ACTIVITIES}
                     renderItem={renderRecentActivity}
@@ -101,7 +104,7 @@ const DashboardScreen = ({ navigation }) => {
                     contentContainerStyle={styles.recentActivitiesList}
                 />
 
-                <Text style={styles.sectionTitle}>MATÉRIAS</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>MATÉRIAS</Text>
                 <FlatList
                     data={DUMMY_SUBJECTS}
                     renderItem={renderSubject}
@@ -119,7 +122,6 @@ const DashboardScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: COLORS.background,
     },
     scrollContainer: {
         padding: SPACING.medium,
@@ -134,7 +136,6 @@ const styles = StyleSheet.create({
     headerGreeting: {
         fontSize: 22,
         fontWeight: 'bold',
-        color: COLORS.primary,
     },
     coinsContainer: {
         flexDirection: 'row',
@@ -143,13 +144,11 @@ const styles = StyleSheet.create({
     coinsAmount: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: COLORS.secondary,
         marginRight: SPACING.small,
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: COLORS.textPrimary,
         marginTop: SPACING.medium,
         marginBottom: SPACING.medium,
         marginLeft: SPACING.small,
@@ -158,7 +157,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: SPACING.small,
     },
     recentActivityCard: {
-        backgroundColor: '#F3F3F3',
         padding: SPACING.medium,
         borderRadius: SPACING.small,
         width: 150,
@@ -173,11 +171,9 @@ const styles = StyleSheet.create({
     },
     recentActivityTitle: {
         fontWeight: '600',
-        color: COLORS.textPrimary,
     },
     recentActivityProfessor: {
         fontSize: 12,
-        color: COLORS.textSecondary,
     },
     subjectsList: {
         marginTop: SPACING.small,
@@ -198,11 +194,11 @@ const styles = StyleSheet.create({
     subjectName: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: COLORS.background, 
+        color: '#FFFFFF', 
     },
     subjectProfessor: {
         fontSize: 14,
-        color: COLORS.background,
+        color: '#FFFFFF', 
         opacity: 0.8,
     },
     activityCountContainer: {
@@ -211,11 +207,11 @@ const styles = StyleSheet.create({
     activityCount: {
         fontSize: 32,
         fontWeight: 'bold',
-        color: COLORS.background,
+        color: '#FFFFFF', 
     },
     activityCountLabel: {
         fontSize: 10,
-        color: COLORS.background,
+        color: '#FFFFFF', 
         opacity: 0.7,
     }
 });

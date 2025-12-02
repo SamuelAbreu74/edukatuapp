@@ -1,3 +1,5 @@
+// Arquivo: frontend/screens/add_atv.js
+
 import React, { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { 
@@ -10,15 +12,16 @@ import {
     Alert,
     ActivityIndicator
 } from 'react-native';
-import { COLORS, SPACING } from '../styles/theme';
+import { useTheme } from '../context/ThemeContext';
+import { SPACING } from '../styles/theme';
 import { API_URL } from '../config/api'; 
 
 const CreateActivityScreen = ({ navigation }) => {
+    const { colors } = useTheme();
     const [title, setTitle] = useState('');
     const [subject, setSubject] = useState('');
     const [difficulty, setDifficulty] = useState('MEDIO'); 
 
-    // Adicionado campo de descrição (Opcional no front, mas bom ter)
     const [description, setDescription] = useState('');
 
     const [question, setQuestion] = useState('');
@@ -40,16 +43,13 @@ const CreateActivityScreen = ({ navigation }) => {
 
         setLoading(true);
 
-        // Mapeia o índice (0, 1, 2, 3) para a letra (A, B, C, D) se necessário
-       
-        
         const activityPayload = {
             title: title,
-            description: description || "Atividade criada pelo App", // Campo obrigatório
+            description: description || "Atividade criada pelo App", 
             subject: subject,
-            grade: "Série Padrão", // Campo que estava faltando
+            grade: "Série Padrão", 
             coins_reward: 10,
-            time: 30, // Campo obrigatório (tempo em minutos)
+            time: 30, 
             difficulty: difficulty,
             active: true,
             questions: [
@@ -59,8 +59,8 @@ const CreateActivityScreen = ({ navigation }) => {
                     option_b: optionB,
                     option_c: optionC,
                     option_d: optionD,
-                    option_e: "N/A", // Backend pede opção E? 
-                    correct_answer: correctOption, // Ex: "Alternativa A"
+                    option_e: "N/A", 
+                    correct_answer: correctOption, 
                     explanation: "Sem explicação",
                     scores: 10
                 }
@@ -79,7 +79,6 @@ const CreateActivityScreen = ({ navigation }) => {
             console.log("Enviando para:", `${API_URL}/atividades`);
             console.log("Payload:", JSON.stringify(activityPayload, null, 2));
             
-            // --- ROTA CORRIGIDA PARA /atividades ---
             const response = await fetch(`${API_URL}/atividades`, { 
                 method: 'POST',
                 headers: { 
@@ -89,13 +88,12 @@ const CreateActivityScreen = ({ navigation }) => {
                 body: JSON.stringify(activityPayload),
             });
 
-            const textResponse = await response.text(); // Lê como texto para evitar erro de JSON
+            const textResponse = await response.text(); 
             
             if (response.ok) {
                 Alert.alert('Sucesso', 'Atividade criada com sucesso!');
                 navigation.goBack(); 
             } else {
-                // Tenta converter o erro para JSON, se não der, mostra o texto
                 try {
                     const data = JSON.parse(textResponse);
                     Alert.alert('Erro', data.message || 'Não foi possível criar.');
@@ -117,6 +115,7 @@ const CreateActivityScreen = ({ navigation }) => {
         <TouchableOpacity 
             style={[
                 styles.diffButton, 
+                { borderColor: colors.inputBorder, backgroundColor: colors.inputBackground },
                 difficulty === value && styles.diffButtonSelected,
                 value === 'FACIL' && difficulty === value && { backgroundColor: '#4CAF50' },
                 value === 'MEDIO' && difficulty === value && { backgroundColor: '#FFC107' },
@@ -126,41 +125,45 @@ const CreateActivityScreen = ({ navigation }) => {
         >
             <Text style={[
                 styles.diffText, 
+                { color: colors.text },
                 difficulty === value && styles.diffTextSelected
             ]}>{label}</Text>
         </TouchableOpacity>
     );
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.headerTitle}>Nova Atividade</Text>
+        <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
+            <Text style={[styles.headerTitle, { color: colors.primary }]}>Nova Atividade</Text>
             
             <View style={styles.section}>
-                <Text style={styles.label}>Título</Text>
+                <Text style={[styles.label, { color: colors.text }]}>Título</Text>
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, { backgroundColor: colors.inputBackground, borderColor: colors.inputBorder, color: colors.text }]}
                     placeholder="Ex: Equações de 1º Grau"
+                    placeholderTextColor={colors.placeholder}
                     value={title}
                     onChangeText={setTitle}
                 />
 
-                <Text style={styles.label}>Descrição</Text>
+                <Text style={[styles.label, { color: colors.text }]}>Descrição</Text>
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, { backgroundColor: colors.inputBackground, borderColor: colors.inputBorder, color: colors.text }]}
                     placeholder="Breve descrição..."
+                    placeholderTextColor={colors.placeholder}
                     value={description}
                     onChangeText={setDescription}
                 />
 
-                <Text style={styles.label}>Matéria</Text>
+                <Text style={[styles.label, { color: colors.text }]}>Matéria</Text>
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, { backgroundColor: colors.inputBackground, borderColor: colors.inputBorder, color: colors.text }]}
                     placeholder="Ex: Matemática"
+                    placeholderTextColor={colors.placeholder}
                     value={subject}
                     onChangeText={setSubject}
                 />
 
-                <Text style={styles.label}>Dificuldade</Text>
+                <Text style={[styles.label, { color: colors.text }]}>Dificuldade</Text>
                 <View style={styles.row}>
                     <DifficultyButton label="Fácil" value="FACIL" />
                     <DifficultyButton label="Médio" value="MEDIO" />
@@ -168,95 +171,112 @@ const CreateActivityScreen = ({ navigation }) => {
                 </View>
             </View>
 
-            <View style={styles.divider} />
+            <View style={[styles.divider, { backgroundColor: colors.inputBorder }]} />
 
-            <Text style={styles.sectionTitle}>Questão</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Questão</Text>
             
-            <Text style={styles.label}>Enunciado:</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Enunciado:</Text>
             <TextInput
-                style={[styles.input, styles.textArea]}
+                style={[styles.input, styles.textArea, { backgroundColor: colors.inputBackground, borderColor: colors.inputBorder, color: colors.text }]}
                 placeholder="Digite a pergunta aqui..."
+                placeholderTextColor={colors.placeholder}
                 multiline
                 numberOfLines={3}
                 value={question}
                 onChangeText={setQuestion}
             />
 
-            <Text style={styles.label}>Alternativas (Toque na letra correta):</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Alternativas (Toque na letra correta):</Text>
             
-            {/* Opção A */}
             <View style={styles.optionContainer}>
                 <TouchableOpacity 
-                    style={[styles.radioCircle, correctOption === optionA && styles.selectedRadio]} 
-                    onPress={() => setCorrectOption(optionA)} // Salva o TEXTO da opção como correta
+                    style={[
+                        styles.radioCircle, 
+                        { borderColor: colors.inputBorder, backgroundColor: colors.inputBackground },
+                        correctOption === optionA && optionA !== '' && { backgroundColor: '#4CAF50', borderColor: '#4CAF50' }
+                    ]} 
+                    onPress={() => setCorrectOption(optionA)} 
                 >
-                    <Text style={styles.radioText}>A</Text>
+                    <Text style={[styles.radioText, { color: colors.text }]}>A</Text>
                 </TouchableOpacity>
                 <TextInput
-                    style={styles.inputOption}
+                    style={[styles.inputOption, { backgroundColor: colors.inputBackground, borderColor: colors.inputBorder, color: colors.text }]}
                     placeholder="Resposta A"
+                    placeholderTextColor={colors.placeholder}
                     value={optionA}
                     onChangeText={setOptionA}
                 />
             </View>
 
-            {/* Opção B */}
             <View style={styles.optionContainer}>
                 <TouchableOpacity 
-                    style={[styles.radioCircle, correctOption === optionB && styles.selectedRadio]} 
+                    style={[
+                        styles.radioCircle, 
+                        { borderColor: colors.inputBorder, backgroundColor: colors.inputBackground },
+                        correctOption === optionB && optionB !== '' && { backgroundColor: '#4CAF50', borderColor: '#4CAF50' }
+                    ]} 
                     onPress={() => setCorrectOption(optionB)}
                 >
-                    <Text style={styles.radioText}>B</Text>
+                    <Text style={[styles.radioText, { color: colors.text }]}>B</Text>
                 </TouchableOpacity>
                 <TextInput
-                    style={styles.inputOption}
+                    style={[styles.inputOption, { backgroundColor: colors.inputBackground, borderColor: colors.inputBorder, color: colors.text }]}
                     placeholder="Resposta B"
+                    placeholderTextColor={colors.placeholder}
                     value={optionB}
                     onChangeText={setOptionB}
                 />
             </View>
 
-            {/* Opção C */}
             <View style={styles.optionContainer}>
                 <TouchableOpacity 
-                    style={[styles.radioCircle, correctOption === optionC && styles.selectedRadio]} 
+                    style={[
+                        styles.radioCircle, 
+                        { borderColor: colors.inputBorder, backgroundColor: colors.inputBackground },
+                        correctOption === optionC && optionC !== '' && { backgroundColor: '#4CAF50', borderColor: '#4CAF50' }
+                    ]} 
                     onPress={() => setCorrectOption(optionC)}
                 >
-                    <Text style={styles.radioText}>C</Text>
+                    <Text style={[styles.radioText, { color: colors.text }]}>C</Text>
                 </TouchableOpacity>
                 <TextInput
-                    style={styles.inputOption}
+                    style={[styles.inputOption, { backgroundColor: colors.inputBackground, borderColor: colors.inputBorder, color: colors.text }]}
                     placeholder="Resposta C"
+                    placeholderTextColor={colors.placeholder}
                     value={optionC}
                     onChangeText={setOptionC}
                 />
             </View>
 
-            {/* Opção D */}
             <View style={styles.optionContainer}>
                 <TouchableOpacity 
-                    style={[styles.radioCircle, correctOption === optionD && styles.selectedRadio]} 
+                    style={[
+                        styles.radioCircle, 
+                        { borderColor: colors.inputBorder, backgroundColor: colors.inputBackground },
+                        correctOption === optionD && optionD !== '' && { backgroundColor: '#4CAF50', borderColor: '#4CAF50' }
+                    ]} 
                     onPress={() => setCorrectOption(optionD)}
                 >
-                    <Text style={styles.radioText}>D</Text>
+                    <Text style={[styles.radioText, { color: colors.text }]}>D</Text>
                 </TouchableOpacity>
                 <TextInput
-                    style={styles.inputOption}
+                    style={[styles.inputOption, { backgroundColor: colors.inputBackground, borderColor: colors.inputBorder, color: colors.text }]}
                     placeholder="Resposta D"
+                    placeholderTextColor={colors.placeholder}
                     value={optionD}
                     onChangeText={setOptionD}
                 />
             </View>
 
             <TouchableOpacity 
-                style={styles.saveButton} 
+                style={[styles.saveButton, { backgroundColor: colors.primary }]} 
                 onPress={handleCreateActivity}
                 disabled={loading}
             >
                 {loading ? (
-                    <ActivityIndicator color="#FFF" />
+                    <ActivityIndicator color={colors.buttonText} />
                 ) : (
-                    <Text style={styles.saveButtonText}>CRIAR ATIVIDADE</Text>
+                    <Text style={[styles.saveButtonText, { color: colors.buttonText }]}>CRIAR ATIVIDADE</Text>
                 )}
             </TouchableOpacity>
 
@@ -268,19 +288,16 @@ const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
         padding: SPACING.large,
-        backgroundColor: '#F5F5F5',
     },
     headerTitle: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: COLORS.primary,
         marginBottom: SPACING.large,
         textAlign: 'center',
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: COLORS.textPrimary,
         marginBottom: SPACING.medium,
     },
     section: {
@@ -288,18 +305,14 @@ const styles = StyleSheet.create({
     },
     divider: {
         height: 1,
-        backgroundColor: '#DDD',
         marginVertical: SPACING.large,
     },
     label: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#666',
         marginBottom: 6,
     },
     input: {
-        backgroundColor: '#FFF',
-        borderColor: '#DDD',
         borderWidth: 1,
         borderRadius: SPACING.small,
         padding: SPACING.medium,
@@ -319,18 +332,15 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 10,
         borderWidth: 1,
-        borderColor: '#DDD',
         borderRadius: 8,
         marginHorizontal: 4,
         alignItems: 'center',
-        backgroundColor: '#FFF',
     },
     diffButtonSelected: {
         borderColor: 'transparent',
     },
     diffText: {
         fontSize: 14,
-        color: '#666',
     },
     diffTextSelected: {
         color: '#FFF',
@@ -343,8 +353,6 @@ const styles = StyleSheet.create({
     },
     inputOption: {
         flex: 1,
-        backgroundColor: '#FFF',
-        borderColor: '#DDD',
         borderWidth: 1,
         borderRadius: SPACING.small,
         padding: SPACING.medium,
@@ -355,22 +363,17 @@ const styles = StyleSheet.create({
         height: 40,
         borderRadius: 20,
         borderWidth: 2,
-        borderColor: '#DDD',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: SPACING.small,
-        backgroundColor: '#FFF',
     },
     selectedRadio: {
-        backgroundColor: COLORS.success || '#4CAF50',
-        borderColor: COLORS.success || '#4CAF50',
+        
     },
     radioText: {
         fontWeight: 'bold',
-        color: '#555',
     },
     saveButton: {
-        backgroundColor: COLORS.primary,
         padding: SPACING.large,
         borderRadius: SPACING.small,
         alignItems: 'center',
@@ -378,7 +381,6 @@ const styles = StyleSheet.create({
         marginBottom: 40,
     },
     saveButtonText: {
-        color: '#FFF',
         fontWeight: 'bold',
         fontSize: 18,
     }

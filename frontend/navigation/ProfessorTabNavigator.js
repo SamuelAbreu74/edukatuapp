@@ -1,24 +1,34 @@
-
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../styles/theme';
+import { useTheme } from '../context/ThemeContext';
 
-//  5 telas do Professor
 import DashboardScreen from '../screens/dashboard'; 
 import SubjectsScreen from '../screens/SubjectsScreen';
 import AddActivityScreen from '../screens/add_atv'; 
 import ProfileScreen from '../screens/ProfileScreen';
 import RankingScreen from '../screens/RankingScreen';
+
 const Tab = createBottomTabNavigator();
 
 const ProfessorTabNavigator = () => {
+  const { colors } = useTheme();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: COLORS.primary,
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.placeholder,
+        tabBarStyle: {
+            backgroundColor: colors.cardBackground,
+            borderTopColor: colors.inputBorder,
+            borderTopWidth: 1,
+            height: 110,
+            paddingBottom: 30,
+            paddingTop: 10,
+            elevation: 0, 
+        },
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
           if (route.name === 'Início') {
@@ -28,9 +38,9 @@ const ProfessorTabNavigator = () => {
           } else if (route.name === 'Adicionar') {
             iconName = focused ? 'add-circle' : 'add-circle-outline';
             return <Ionicons name={iconName} size={size * 1.3} color={color} />;
-          } else if (route.name === 'Ranking') { //rank visivel pro prof
+          } else if (route.name === 'Ranking') { 
             iconName = focused ? 'trophy' : 'trophy-outline';
-          } else if (route.name === 'Perfil') { // alterar perfil
+          } else if (route.name === 'Perfil') { 
             iconName = focused ? 'person' : 'person-outline';
           }
           return <Ionicons name={iconName} size={size} color={color} />;

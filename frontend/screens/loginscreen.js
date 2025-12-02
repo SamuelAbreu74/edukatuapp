@@ -36,6 +36,37 @@ const SPACING = {
   xLarge: 32,
 };
 
+function jwtDecode(token) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    return {};
+  }
+}
+
+if (!global.atob) {
+  global.atob = (input) => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+    let str = input.replace(/=+$/, '');
+    let output = '';
+    if (str.length % 4 == 1) {
+      throw new Error("'atob' failed: The string to be decoded is not correctly encoded.");
+    }
+    for (let bc = 0, bs = 0, buffer, i = 0; (buffer = str.charAt(i++)); ~buffer && ((bs = i % 4 ? bs * 64 + buffer : buffer), i % 4) ? (output += String.fromCharCode(255 & (bs >> ((-2 * i) & 6)))) : 0) {
+      buffer = chars.indexOf(buffer);
+    }
+    return output;
+  };
+}
+
 const LoginScreen = ({ navigation }) => {
   const { colors, theme, toggleTheme } = useTheme();
 
@@ -70,6 +101,19 @@ const LoginScreen = ({ navigation }) => {
         const data = await response.json();
 
         if (response.ok) {
+            const decodedToken = jwtDecode(data);
+            const returnedType = decodedToken.type || decodedToken.role;
+            const selectedTabType = userType === 'student' ? 'ALUNO' : 'PROFESSOR';
+
+            if (returnedType && returnedType !== selectedTabType) {
+                Alert.alert(
+                    'Acesso Negado', 
+                    'Área de login incorreta.'
+                );
+                setLoading(false);
+                return; 
+            }
+
             console.log('Login realizado:', data);
 
             await AsyncStorage.setItem('userToken', JSON.stringify(data));

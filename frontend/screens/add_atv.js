@@ -22,6 +22,7 @@ const CreateActivityScreen = ({ navigation }) => {
     const [subject, setSubject] = useState('');
     const [difficulty, setDifficulty] = useState('MEDIO'); 
 
+    // Adicionado campo de descrição (Opcional no front, mas bom ter)
     const [description, setDescription] = useState('');
 
     const [question, setQuestion] = useState('');
@@ -43,6 +44,8 @@ const CreateActivityScreen = ({ navigation }) => {
 
         setLoading(true);
 
+        // Mapeia o índice (0, 1, 2, 3) para a letra (A, B, C, D) se necessário
+        
         const activityPayload = {
             title: title,
             description: description || "Atividade criada pelo App", 
@@ -59,8 +62,8 @@ const CreateActivityScreen = ({ navigation }) => {
                     option_b: optionB,
                     option_c: optionC,
                     option_d: optionD,
-                    option_e: "N/A", 
-                    correct_answer: correctOption, 
+                    option_e: "N/A", // Backend pede opção E? 
+                    correct_answer: correctOption, // Ex: "Alternativa A"
                     explanation: "Sem explicação",
                     scores: 10
                 }
@@ -68,7 +71,16 @@ const CreateActivityScreen = ({ navigation }) => {
         };
 
         try {
-            const token = await AsyncStorage.getItem('userToken');
+            const rawToken = await AsyncStorage.getItem('userToken');
+            let token = rawToken;
+
+            if (rawToken) {
+                try {
+                    const parsed = JSON.parse(rawToken);
+                    token = parsed.token || parsed; 
+                } catch (e) {
+                }
+            }
 
             if (!token) {
                 Alert.alert('Sessão Expirada', 'Faça login novamente.');

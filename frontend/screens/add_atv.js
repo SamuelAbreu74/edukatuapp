@@ -25,27 +25,61 @@ const CreateActivityScreen = ({ navigation }) => {
     // Adicionado campo de descrição (Opcional no front, mas bom ter)
     const [description, setDescription] = useState('');
 
+    const [questionsList, setQuestionsList] = useState([]);
+
     const [question, setQuestion] = useState('');
     const [optionA, setOptionA] = useState('');
     const [optionB, setOptionB] = useState('');
     const [optionC, setOptionC] = useState('');
     const [optionD, setOptionD] = useState('');
     
-   
     const [correctOption, setCorrectOption] = useState(null);
     
     const [loading, setLoading] = useState(false);
 
+    const handleAddQuestion = () => {
+        if (!question || !optionA || !optionB || !correctOption) {
+            Alert.alert('Atenção', 'Preencha o enunciado, pelo menos 2 alternativas e marque a correta.');
+            return;
+        }
+
+        const newQuestion = {
+            question: question,
+            option_a: optionA,
+            option_b: optionB,
+            option_c: optionC,
+            option_d: optionD,
+            option_e: "N/A", 
+            correct_answer: correctOption, 
+            explanation: "Sem explicação",
+            scores: 10
+        };
+
+        setQuestionsList([...questionsList, newQuestion]);
+
+        setQuestion('');
+        setOptionA('');
+        setOptionB('');
+        setOptionC('');
+        setOptionD('');
+        setCorrectOption(null);
+
+        Alert.alert('Sucesso', 'Questão adicionada à lista! Adicione mais ou clique em Finalizar.');
+    };
+
     const handleCreateActivity = async () => {
-        if (!title || !subject || !question || !optionA || !optionB || !correctOption) {
-            Alert.alert('Atenção', 'Preencha todos os campos obrigatórios.');
+        if (!title || !subject) {
+            Alert.alert('Atenção', 'Preencha o Título e a Matéria da atividade.');
+            return;
+        }
+
+        if (questionsList.length === 0) {
+            Alert.alert('Atenção', 'Adicione pelo menos uma questão clicando em "Adicionar Questão".');
             return;
         }
 
         setLoading(true);
 
-        // Mapeia o índice (0, 1, 2, 3) para a letra (A, B, C, D) se necessário
-        
         const activityPayload = {
             title: title,
             description: description || "Atividade criada pelo App", 
@@ -55,19 +89,7 @@ const CreateActivityScreen = ({ navigation }) => {
             time: 30, 
             difficulty: difficulty,
             active: true,
-            questions: [
-                {
-                    question: question,
-                    option_a: optionA,
-                    option_b: optionB,
-                    option_c: optionC,
-                    option_d: optionD,
-                    option_e: "N/A", // Backend pede opção E? 
-                    correct_answer: correctOption, // Ex: "Alternativa A"
-                    explanation: "Sem explicação",
-                    scores: 10
-                }
-            ]
+            questions: questionsList 
         };
 
         try {
@@ -89,7 +111,6 @@ const CreateActivityScreen = ({ navigation }) => {
             }
 
             console.log("Enviando para:", `${API_URL}/atividades`);
-            console.log("Payload:", JSON.stringify(activityPayload, null, 2));
             
             const response = await fetch(`${API_URL}/atividades`, { 
                 method: 'POST',
@@ -185,7 +206,10 @@ const CreateActivityScreen = ({ navigation }) => {
 
             <View style={[styles.divider, { backgroundColor: colors.inputBorder }]} />
 
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Questão</Text>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10}}>
+                <Text style={[styles.sectionTitle, { color: colors.text, marginBottom: 0 }]}>Nova Questão</Text>
+                <Text style={{ color: colors.primary, fontWeight: 'bold' }}>{questionsList.length} Salva(s)</Text>
+            </View>
             
             <Text style={[styles.label, { color: colors.text }]}>Enunciado:</Text>
             <TextInput
@@ -205,9 +229,9 @@ const CreateActivityScreen = ({ navigation }) => {
                     style={[
                         styles.radioCircle, 
                         { borderColor: colors.inputBorder, backgroundColor: colors.inputBackground },
-                        correctOption === optionA && optionA !== '' && { backgroundColor: '#4CAF50', borderColor: '#4CAF50' }
+                        correctOption === 'A' && { backgroundColor: '#4CAF50', borderColor: '#4CAF50' }
                     ]} 
-                    onPress={() => setCorrectOption(optionA)} 
+                    onPress={() => setCorrectOption('A')} 
                 >
                     <Text style={[styles.radioText, { color: colors.text }]}>A</Text>
                 </TouchableOpacity>
@@ -225,9 +249,9 @@ const CreateActivityScreen = ({ navigation }) => {
                     style={[
                         styles.radioCircle, 
                         { borderColor: colors.inputBorder, backgroundColor: colors.inputBackground },
-                        correctOption === optionB && optionB !== '' && { backgroundColor: '#4CAF50', borderColor: '#4CAF50' }
+                        correctOption === 'B' && { backgroundColor: '#4CAF50', borderColor: '#4CAF50' }
                     ]} 
-                    onPress={() => setCorrectOption(optionB)}
+                    onPress={() => setCorrectOption('B')}
                 >
                     <Text style={[styles.radioText, { color: colors.text }]}>B</Text>
                 </TouchableOpacity>
@@ -245,9 +269,9 @@ const CreateActivityScreen = ({ navigation }) => {
                     style={[
                         styles.radioCircle, 
                         { borderColor: colors.inputBorder, backgroundColor: colors.inputBackground },
-                        correctOption === optionC && optionC !== '' && { backgroundColor: '#4CAF50', borderColor: '#4CAF50' }
+                        correctOption === 'C' && { backgroundColor: '#4CAF50', borderColor: '#4CAF50' }
                     ]} 
-                    onPress={() => setCorrectOption(optionC)}
+                    onPress={() => setCorrectOption('C')}
                 >
                     <Text style={[styles.radioText, { color: colors.text }]}>C</Text>
                 </TouchableOpacity>
@@ -265,9 +289,9 @@ const CreateActivityScreen = ({ navigation }) => {
                     style={[
                         styles.radioCircle, 
                         { borderColor: colors.inputBorder, backgroundColor: colors.inputBackground },
-                        correctOption === optionD && optionD !== '' && { backgroundColor: '#4CAF50', borderColor: '#4CAF50' }
+                        correctOption === 'D' && { backgroundColor: '#4CAF50', borderColor: '#4CAF50' }
                     ]} 
-                    onPress={() => setCorrectOption(optionD)}
+                    onPress={() => setCorrectOption('D')}
                 >
                     <Text style={[styles.radioText, { color: colors.text }]}>D</Text>
                 </TouchableOpacity>
@@ -281,6 +305,13 @@ const CreateActivityScreen = ({ navigation }) => {
             </View>
 
             <TouchableOpacity 
+                style={[styles.saveButton, { backgroundColor: colors.cardBackground, borderWidth: 1, borderColor: colors.primary, marginTop: 10, marginBottom: 10 }]} 
+                onPress={handleAddQuestion}
+            >
+                <Text style={[styles.saveButtonText, { color: colors.primary, fontSize: 16 }]}>+ ADICIONAR QUESTÃO</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
                 style={[styles.saveButton, { backgroundColor: colors.primary }]} 
                 onPress={handleCreateActivity}
                 disabled={loading}
@@ -288,7 +319,7 @@ const CreateActivityScreen = ({ navigation }) => {
                 {loading ? (
                     <ActivityIndicator color={colors.buttonText} />
                 ) : (
-                    <Text style={[styles.saveButtonText, { color: colors.buttonText }]}>CRIAR ATIVIDADE</Text>
+                    <Text style={[styles.saveButtonText, { color: colors.buttonText }]}>FINALIZAR E CRIAR</Text>
                 )}
             </TouchableOpacity>
 
@@ -390,7 +421,7 @@ const styles = StyleSheet.create({
         borderRadius: SPACING.small,
         alignItems: 'center',
         marginTop: SPACING.large,
-        marginBottom: 40,
+        marginBottom: 20,
     },
     saveButtonText: {
         fontWeight: 'bold',

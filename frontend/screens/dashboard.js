@@ -1,6 +1,6 @@
 // Arquivo: frontend/screens/DashboardScreen.js
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
     View, 
     Text, 
@@ -17,14 +17,6 @@ import { useTheme } from '../context/ThemeContext';
 import { SPACING } from '../styles/theme';
 import { API_URL } from '../config/api';
 
-// Dados mockados para as matérias
-const DUMMY_SUBJECTS = [
-    { id: 'a', name: 'Português', professor: 'Du', count: 5, status: 'em_dia' }, 
-    { id: 'b', name: 'Matemática', professor: 'Pedro', count: 8, status: 'alerta' }, 
-    { id: 'c', name: 'História', professor: 'David', count: 3, status: 'pendente' }, 
-    { id: 'd', name: 'Ciências', professor: 'Luna', count: 4, status: 'em_dia' }, 
-];
-
 const DashboardScreen = ({ navigation }) => {
     const { colors, theme } = useTheme();
     
@@ -32,6 +24,26 @@ const DashboardScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(true);
     const [userName, setUserName] = useState('Usuário');
     const [userType, setUserType] = useState('ALUNO'); 
+
+    const subjectsList = useMemo(() => {
+        const grouped = {};
+        
+        activitiesList.forEach(act => {
+            const mat = act.subject || 'Geral';
+            if (!grouped[mat]) {
+                grouped[mat] = { 
+                    id: mat, 
+                    name: mat, 
+                    professor: userName, 
+                    count: 0, 
+                    status: 'em_dia' 
+                };
+            }
+            grouped[mat].count += 1;
+        });
+
+        return Object.values(grouped);
+    }, [activitiesList, userName]);
 
     // Função para determinar a cor do card da matéria baseado no status
     const getSubjectColor = (status) => {
@@ -113,8 +125,7 @@ const DashboardScreen = ({ navigation }) => {
             onPress={() => {
                 // Futura edit: Se for professor, navega para edição. Se for aluno, para responder.
                 if (userType === 'PROFESSOR') {
-                    // navigation.navigate('EditActivity', { activityId: item.id });
-                    console.log("Editar atividade:", item.id);
+                    navigation.navigate('EditActivity', { activityData: item });
                 } else {
                     console.log("Responder atividade:", item.id);
                 }
@@ -189,11 +200,16 @@ const DashboardScreen = ({ navigation }) => {
 
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>MATÉRIAS</Text>
                 <FlatList
-                    data={DUMMY_SUBJECTS}
+                    data={subjectsList}
                     renderItem={renderSubject}
                     keyExtractor={item => item.id}
                     scrollEnabled={false} 
                     contentContainerStyle={styles.subjectsList}
+                    ListEmptyComponent={
+                        <Text style={{ color: colors.placeholder, marginLeft: 10 }}>
+                            Nenhuma matéria cadastrada.
+                        </Text>
+                    }
                 />
 
             </ScrollView>
@@ -201,6 +217,7 @@ const DashboardScreen = ({ navigation }) => {
     );
 };
 
+// --- Estilos do Dashboard (Sem alteração) ---
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,

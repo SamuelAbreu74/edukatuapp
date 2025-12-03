@@ -37,6 +37,8 @@ const CreateActivityScreen = ({ navigation }) => {
     
     const [loading, setLoading] = useState(false);
 
+    const isHeaderLocked = questionsList.length > 0;
+
     const handleAddQuestion = () => {
         if (!question || !optionA || !optionB || !correctOption) {
             Alert.alert('Atenção', 'Preencha o enunciado, pelo menos 2 alternativas e marque a correta.');
@@ -124,6 +126,18 @@ const CreateActivityScreen = ({ navigation }) => {
             const textResponse = await response.text(); 
             
             if (response.ok) {
+                setTitle('');
+                setSubject('');
+                setDescription('');
+                setDifficulty('MEDIO');
+                setQuestionsList([]);
+                setQuestion('');
+                setOptionA('');
+                setOptionB('');
+                setOptionC('');
+                setOptionD('');
+                setCorrectOption(null);
+
                 Alert.alert('Sucesso', 'Atividade criada com sucesso!');
                 navigation.goBack(); 
             } else {
@@ -148,17 +162,18 @@ const CreateActivityScreen = ({ navigation }) => {
         <TouchableOpacity 
             style={[
                 styles.diffButton, 
-                { borderColor: colors.inputBorder, backgroundColor: colors.inputBackground },
+                { borderColor: colors.inputBorder, backgroundColor: isHeaderLocked ? '#E0E0E0' : colors.inputBackground },
                 difficulty === value && styles.diffButtonSelected,
-                value === 'FACIL' && difficulty === value && { backgroundColor: '#4CAF50' },
-                value === 'MEDIO' && difficulty === value && { backgroundColor: '#FFC107' },
-                value === 'DIFICIL' && difficulty === value && { backgroundColor: '#F44336' },
+                value === 'FACIL' && difficulty === value && { backgroundColor: isHeaderLocked ? '#81C784' : '#4CAF50' },
+                value === 'MEDIO' && difficulty === value && { backgroundColor: isHeaderLocked ? '#FFD54F' : '#FFC107' },
+                value === 'DIFICIL' && difficulty === value && { backgroundColor: isHeaderLocked ? '#E57373' : '#F44336' },
             ]}
-            onPress={() => setDifficulty(value)}
+            onPress={() => !isHeaderLocked && setDifficulty(value)}
+            disabled={isHeaderLocked}
         >
             <Text style={[
                 styles.diffText, 
-                { color: colors.text },
+                { color: isHeaderLocked ? '#888' : colors.text },
                 difficulty === value && styles.diffTextSelected
             ]}>{label}</Text>
         </TouchableOpacity>
@@ -168,32 +183,56 @@ const CreateActivityScreen = ({ navigation }) => {
         <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
             <Text style={[styles.headerTitle, { color: colors.primary }]}>Nova Atividade</Text>
             
-            <View style={styles.section}>
-                <Text style={[styles.label, { color: colors.text }]}>Título</Text>
+            <View style={[styles.section, isHeaderLocked && { opacity: 0.6 }]}>
+                <Text style={[styles.label, { color: colors.text }]}>Título {isHeaderLocked && '(Já preenchido)'}</Text>
                 <TextInput
-                    style={[styles.input, { backgroundColor: colors.inputBackground, borderColor: colors.inputBorder, color: colors.text }]}
+                    style={[
+                        styles.input, 
+                        { 
+                            backgroundColor: isHeaderLocked ? '#333' : colors.inputBackground, 
+                            borderColor: colors.inputBorder, 
+                            color: isHeaderLocked ? '#AAA' : colors.text 
+                        }
+                    ]}
                     placeholder="Ex: Equações de 1º Grau"
                     placeholderTextColor={colors.placeholder}
                     value={title}
                     onChangeText={setTitle}
+                    editable={!isHeaderLocked}
                 />
 
                 <Text style={[styles.label, { color: colors.text }]}>Descrição</Text>
                 <TextInput
-                    style={[styles.input, { backgroundColor: colors.inputBackground, borderColor: colors.inputBorder, color: colors.text }]}
+                    style={[
+                        styles.input, 
+                        { 
+                            backgroundColor: isHeaderLocked ? '#333' : colors.inputBackground, 
+                            borderColor: colors.inputBorder, 
+                            color: isHeaderLocked ? '#AAA' : colors.text 
+                        }
+                    ]}
                     placeholder="Breve descrição..."
                     placeholderTextColor={colors.placeholder}
                     value={description}
                     onChangeText={setDescription}
+                    editable={!isHeaderLocked}
                 />
 
                 <Text style={[styles.label, { color: colors.text }]}>Matéria</Text>
                 <TextInput
-                    style={[styles.input, { backgroundColor: colors.inputBackground, borderColor: colors.inputBorder, color: colors.text }]}
+                    style={[
+                        styles.input, 
+                        { 
+                            backgroundColor: isHeaderLocked ? '#333' : colors.inputBackground, 
+                            borderColor: colors.inputBorder, 
+                            color: isHeaderLocked ? '#AAA' : colors.text 
+                        }
+                    ]}
                     placeholder="Ex: Matemática"
                     placeholderTextColor={colors.placeholder}
                     value={subject}
                     onChangeText={setSubject}
+                    editable={!isHeaderLocked}
                 />
 
                 <Text style={[styles.label, { color: colors.text }]}>Dificuldade</Text>

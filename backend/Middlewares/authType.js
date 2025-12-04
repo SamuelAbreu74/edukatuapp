@@ -12,14 +12,14 @@ const AuthType = (AcessTypes) => {
         }
         try {
             // Extrai o tipo do usuário 
-            const UserType= req.user.type;
+            const UserType = req.user.type;
             
-            // 2. Verificar se o tipo de usuário está na lista de tipos permitidos
+            // Verificar se o tipo de usuário está na lista de tipos permitidos
             if(!AcessTypes.includes(UserType)){
                 // Se o tipo do usuário não estiver dentro do tipo permitido o acesso dele é negado!
                 return res.status(403).json({message: "Acesso Negado! Você não tem permissão para utilizar esse recurso." })
             }
-            // 3. Usuário autorizado, chama o próximo middleware/função da rota
+            // Usuário autorizado, chama o próximo middleware/função da rota
             return next()
         } catch (error) {
             console.log(error)

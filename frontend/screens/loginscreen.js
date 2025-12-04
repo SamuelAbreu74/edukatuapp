@@ -100,8 +100,9 @@ const LoginScreen = ({ navigation }) => {
 
         const data = await response.json();
 
+
         if (response.ok) {
-            const decodedToken = jwtDecode(data);
+            const decodedToken = jwtDecode(data.AccessToken);
             const returnedType = decodedToken.type || decodedToken.role;
             const selectedTabType = userType === 'student' ? 'ALUNO' : 'PROFESSOR';
 
@@ -133,7 +134,7 @@ const LoginScreen = ({ navigation }) => {
     } finally {
         setLoading(false);
     }
-  };
+  }; 
 
   const handleForgotPassword = () => {
     console.log("Usuário clicou em 'Esqueceu a senha'");

@@ -101,7 +101,7 @@ const CreateActivityScreen = ({ navigation }) => {
             if (rawToken) {
                 try {
                     const parsed = JSON.parse(rawToken);
-                    token = parsed.token || parsed; 
+                    token = parsed.AccessToken || parsed; 
                 } catch (e) {
                 }
             }

@@ -6,6 +6,7 @@ const {AuthType} = require('../Middlewares/authType.js')
 const studentListController = require('../Controllers/StudentListController.js')
 const activityController = require('../Controllers/ActivityController.js')
 const attemptController = require('../Controllers/AttemptController.js')
+const loginController = require('../Controllers/LoginController.js')
 
 
 // =-=-=-=-= ROTAS PRIVADAS DE FUNCIONALIDADES =-=-=-=-=
@@ -21,8 +22,6 @@ router.delete('/atividades', AuthType(["PROFESSOR"]), activityController.deleteA
 
 // =-=-=-=-= CRUD ATIVIDADES ALUNOS =-=-=-=-=
 router.get('/atividades', activityController.getActivity) // Listar todas as atividades
-
-
 
 // =-=-=-=-= TENTATIVAS =-=-=-=-=
 router.post('/atividades/tentativa', AuthType(["ALUNO"]), attemptController.postAttempt) // Cria um novo registro de tentativa que será atualizado enquanto a atividade é feita 

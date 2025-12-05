@@ -34,7 +34,7 @@ const ProfileScreen = ({ navigation }) => {
           }
         }
       } catch (e) {
-      
+        return Alert.alert('Erro de Conexão', 'Não foi possível conectar ao servidor.');
       }
     };
 

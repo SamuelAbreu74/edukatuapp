@@ -66,7 +66,8 @@ const DashboardScreen = ({ navigation }) => {
                 // Tenta parsear o token e extrair dados do usuário se disponíveis
                 try {
                     const parsed = JSON.parse(rawToken);
-                    token = parsed.token || parsed; 
+                    console.log(parsed)
+                    token = parsed.AccessToken || parsed; 
                     
                     // Identifica nome e tipo para personalizar a UI
                     if (parsed.name) setUserName(parsed.name);

@@ -6,13 +6,20 @@ const {AuthType} = require('../Middlewares/authType.js')
 const studentListController = require('../Controllers/StudentListController.js')
 const activityController = require('../Controllers/ActivityController.js')
 const attemptController = require('../Controllers/AttemptController.js')
-const loginController = require('../Controllers/LoginController.js')
-
+const registerController = require('../Controllers/RegisterController.js')
+const usersController = require('../Controllers/UsersController.js')
 
 // =-=-=-=-= ROTAS PRIVADAS DE FUNCIONALIDADES =-=-=-=-=
 
+// =-=-=-=-= CRUD USUÁRIOS =-=-=-=-=
+router.get('/usuarios', AuthType(["ADMINISTRADOR"]), usersController.getUsers) // ROTA PARA LISTAR TODOS OS USUÁRIOS
+router.post('/usuarios', AuthType(["ADMINISTRADOR"]), registerController.postRegister) // ROTA PARA CRIA UM NOVO USUÁRIO
+router.put('/usuarios', AuthType(["ADMINISTRADOR"]), usersController.putUser) // ROTA PARA EDITAR UM USUÁRIO
+router.delete('/usuarios', AuthType(["ADMINISTRADOR"]), usersController.deleteUser) // ROTA PARA DELETAR UM USUÁRIO
+
+
 // =-=-=-=-= CRUD ALUNOS =-=-=-=-=
-router.get('/listar-alunos', AuthType(["PROFESSOR"]), studentListController.getStudents);
+router.get('/listar-alunos', AuthType(["PROFESSOR", "ADMINISTRADOR"]), studentListController.getStudents);
 
 // =-=-=-=-= CRUD ATIVIDADES PROFESSOR =-=-=-=-=
 router.get('/minhas-atividades', AuthType(["PROFESSOR"]), activityController.getActivityByTeacherId) // Listar somente as atividades do usuário logado

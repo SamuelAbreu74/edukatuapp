@@ -34,8 +34,8 @@ module.exports = class Register {
                         },
                     },
                 })
-                return { message: "Aluno adicionado com sucesso!" };
-            } else {
+                return { message: "Aluno adicionado com sucesso!", newUser };
+            } else if (userData.type === "PROFESSOR") {
                 const newUser = await prisma.user.create({
                     data: {
                         email: userData.email,
@@ -49,7 +49,17 @@ module.exports = class Register {
                         },
                     },
                 });
-                return { message: "Professor adicionado com sucesso!"}
+                return { message: "Professor adicionado com sucesso!", newUser }
+            } else {
+                const newUser = await prisma.user.create({
+                    data: {
+                        email: userData.email,
+                        password: userData.password,
+                        name: userData.name,
+                        type: userData.type,
+                    },
+                });
+                return { message: "Admministrador adicionado com sucesso!" , newUser}
             }
         } catch (error) {
             console.log(error)

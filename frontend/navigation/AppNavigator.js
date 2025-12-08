@@ -7,6 +7,8 @@ import LoginScreen from '../screens/loginscreen';
 import AlunoTabNavigator from './AlunoTabNavigator';
 import ProfessorTabNavigator from './ProfessorTabNavigator';
 import SettingsScreen from '../screens/SettingsScreen';
+import ActivityRunScreen from '../screens/ActivityRunScreen';
+import HistoryScreen from '../screens/HistoryScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +23,8 @@ function AppNavigator() {
         <Stack.Screen name="AlunoApp" component={AlunoTabNavigator} />
         <Stack.Screen name="ProfessorApp" component={ProfessorTabNavigator} />
         <Stack.Screen name="Ajustes" component={SettingsScreen} />
+        <Stack.Screen name="ActivityRunScreen" component={ActivityRunScreen} />
+        <Stack.Screen name="HistoryScreen" component={HistoryScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

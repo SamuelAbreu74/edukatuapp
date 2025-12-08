@@ -5,8 +5,6 @@ const refresh = new refreshModel()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
 
-
-
 // CONTROLLERS POR MÉTODO
 
 // =-=-=-=-= POST =-=-=-=-=
@@ -16,12 +14,9 @@ let refreshTokens = []
 
 exports.postLogin = async (req, res) => {
     try {
-
-
         const userData = req.body
         // Chamando o Model para verificar Email e Senha
         const result = await login.post(userData)
-
 
         if (!result) {
             return res.status(400).json({ message: "Usuário não Encontrado!" })
@@ -40,7 +35,6 @@ exports.postLogin = async (req, res) => {
         const ACCESS_TOKEN_SECRET = process.env.JWT_ACCESS_TOKEN_SECRET
         const REFRESH_TOKEN_SECRET = process.env.JWT_REFRESH_TOKEN_SECRET
 
-
         // Chama da função de pegar o Id de acordo com o tipo de usuário (Aluno ou Professor)
         const roleInfo = await login.getRoleIdByUserId(result.id, result.type)
 
@@ -57,12 +51,24 @@ exports.postLogin = async (req, res) => {
 
         refreshTokens.push(RefreshToken)
         
-        return res.status(200).json({ AccessToken, RefreshToken })
+        // Retornando os tokens e também dados básicos do usuário para o front salvar
+        return res.status(200).json({ 
+            AccessToken, 
+            RefreshToken,
+            user: {
+                id: result.id,
+                name: result.name,
+                type: result.type,
+                // Retorna student_id ou teacher_id se existir
+                ...(roleInfo && roleInfo.id ? { [roleInfo.key]: roleInfo.id } : {})
+            }
+        })
 
     } catch (error) {
+        // CONSOLE.LOG PRA ENTENDER PQ APARECE ERRO INTERNO NO SERVIDOR NESSA BOMBA
+        console.error("ERRO DETALHADO NO LOGIN:", error); 
         return res.status(500).json({ message: "Erro interno no servidor!" })
     }
-
 }
 
 // =-=-=-=-= REFRESH =-=-=-=-=
@@ -70,14 +76,15 @@ exports.postLogin = async (req, res) => {
 exports.postRefresh = async (req, res) => {
     const ACCESS_SECRET = process.env.JWT_ACCESS_TOKEN_SECRET
     const REFRESH_SECRET = process.env.JWT_REFRESH_TOKEN_SECRET
-    const refreshToken = req.body.RefreshToken
-
-    const userData = jwt.verify(refreshToken, REFRESH_SECRET)
-
+    
     try {
+        const refreshToken = req.body.RefreshToken
         if (!refreshToken) {
             return res.status(400).json({ message: "Sem o token necessário" })
         }
+        
+        const userData = jwt.verify(refreshToken, REFRESH_SECRET)
+
         if (!refreshTokens.includes(refreshToken)) {
             return res.status(403).json({ message: "Token inexistente" })
         }
@@ -97,6 +104,7 @@ exports.postRefresh = async (req, res) => {
         return res.status(200).json({AccessToken: newAccessToken})
     }
     catch (error) {
+        console.error("🔥 ERRO DETALHADO NO REFRESH:", error);
         return res.status(500).json({ message: "Erro interno no Servidor!" })
     }
 }

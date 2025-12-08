@@ -127,8 +127,8 @@ const DashboardScreen = ({ navigation }) => {
                 // Futura edit: Se for professor, navega para edição. Se for aluno, para responder.
                 if (userType === 'PROFESSOR') {
                     navigation.navigate('EditActivity', { activityData: item });
-                } else {
-                    console.log("Responder atividade:", item.id);
+                } else { console.log("Dados da atv criada:", JSON.stringify(item, null, 2));
+                    navigation.navigate('ActivityRunScreen', { activity: item });
                 }
             }}
         >

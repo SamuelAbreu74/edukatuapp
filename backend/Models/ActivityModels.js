@@ -16,6 +16,11 @@ module.exports = class ActivityModel {
                 },
                 omit: {
                     teacher_id: true
+                },
+                // Update meu welbersued aqui: Inclui as questões na resposta para o aluno
+                //  conseguir responder na tela de responder atividade
+                include: {
+                    questions: true
                 }
             })
             return activities
@@ -37,6 +42,10 @@ module.exports = class ActivityModel {
             const activities = await prisma.activity.findMany({
                 where: {
                     teacher_id: UserData.teacher_id
+                },
+                // Adicionado: Inclui as questões também para o professor visualizar
+                include: {
+                    questions: true
                 }
             })
 

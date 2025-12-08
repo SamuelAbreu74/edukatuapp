@@ -75,7 +75,31 @@ const CreateActivityScreen = ({ navigation }) => {
             return;
         }
 
-        if (questionsList.length === 0) {
+        // Lógica de segurança para pegar a questão que está nos inputs (caso usuário esqueça de clicar em Adicionar)
+        let finalQuestions = [...questionsList];
+
+        if (question) {
+             // Se tem algo escrito no enunciado, verifica se é válido para adicionar
+             if (!optionA || !optionB || !correctOption) {
+                  Alert.alert('Atenção', 'Você começou a escrever uma questão mas não terminou (faltam alternativas ou resposta correta). Finalize-a ou apague o texto antes de salvar.');
+                  return;
+             }
+             
+             // Adiciona a questão pendente à lista final de envio
+             finalQuestions.push({
+                question: question,
+                option_a: optionA,
+                option_b: optionB,
+                option_c: optionC,
+                option_d: optionD,
+                option_e: "N/A", 
+                correct_answer: correctOption, 
+                explanation: "Sem explicação",
+                scores: 10
+             });
+        }
+
+        if (finalQuestions.length === 0) {
             Alert.alert('Atenção', 'Adicione pelo menos uma questão clicando em "Adicionar Questão".');
             return;
         }
@@ -91,7 +115,7 @@ const CreateActivityScreen = ({ navigation }) => {
             time: 30, 
             difficulty: difficulty,
             active: true,
-            questions: questionsList 
+            questions: finalQuestions // Usa a lista corrigida (com a pendente se houver)
         };
 
         try {

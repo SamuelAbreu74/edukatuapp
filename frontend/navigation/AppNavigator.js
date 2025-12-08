@@ -9,6 +9,7 @@ import ProfessorTabNavigator from './ProfessorTabNavigator';
 import SettingsScreen from '../screens/SettingsScreen';
 import ActivityRunScreen from '../screens/ActivityRunScreen';
 import HistoryScreen from '../screens/HistoryScreen';
+import EditActivityScreen from '../screens/EditActivityScreen'; 
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +26,7 @@ function AppNavigator() {
         <Stack.Screen name="Ajustes" component={SettingsScreen} />
         <Stack.Screen name="ActivityRunScreen" component={ActivityRunScreen} />
         <Stack.Screen name="HistoryScreen" component={HistoryScreen} />
+        <Stack.Screen name="EditActivity" component={EditActivityScreen} /> 
       </Stack.Navigator>
     </NavigationContainer>
   );

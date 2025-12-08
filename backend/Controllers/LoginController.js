@@ -45,7 +45,7 @@ exports.postLogin = async (req, res) => {
         }
 
         // Aqui Gera o AccessToken 
-        const AccessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: '5MIN' })
+        const AccessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: '7D' })
         // Aqui Gera o RefreshToken 
         const RefreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: '30MIN' })
 

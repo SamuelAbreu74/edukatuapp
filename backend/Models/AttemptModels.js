@@ -59,6 +59,8 @@ module.exports = class AttemptModel {
 
     // =-=-=-=-= PUT =-=-=-=-= 
     async put(attemptId, currentAnswers, is_completed, scores) {
+
+
         try {
             const result = await prisma.attempt.update({
                 where: {
@@ -73,9 +75,8 @@ module.exports = class AttemptModel {
             return result
 
         } catch (error) {
+            console.log(error)
             return "Erro interno no Servidor!"
         }
-
     }
-
 }

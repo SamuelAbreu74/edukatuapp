@@ -6,7 +6,6 @@ const ActivityModel = new activityModel()
 
 // Controllers por Métodos
 
-
 // =-=-=-=-= GET =-=-=-=-=
 exports.getAll_By_Student_Id = async (req, res) => {
     try {
@@ -52,7 +51,6 @@ exports.putAttempt = async (req, res) => {
     }
     
     try {
-        
         // Busca a tentativa da atividade atual pelo ID e verifica se ela existe
         const attemptRecord = await AttemptModel.getAttempt_by_Id(attempt_id)
         if(!attemptRecord){
@@ -112,7 +110,6 @@ exports.putAttempt = async (req, res) => {
         let scores = 0
         for( let i = 0; i < correct_answers.length; i++){
             
-
             if(correct_answers[i] != student_chosen_options[i]){
                 console.log("Resposta incorreta!")
             }else{
@@ -128,7 +125,6 @@ exports.putAttempt = async (req, res) => {
 
             return res.status(200).json({message: "Última resposta registrada com sucesso!! ", attempt: lastQuestionUpdate})
         }
-
         return res.status(200).json({message: "Resposta registrada com sucesso!! ", attempt: updateAttempt})
 
     } catch (error) {

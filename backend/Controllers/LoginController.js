@@ -45,7 +45,7 @@ exports.postLogin = async (req, res) => {
         }
 
         // Aqui Gera o AccessToken 
-        const AccessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: '5MIN' })
+        const AccessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: '7D' })
         // Aqui Gera o RefreshToken 
         const RefreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: '30MIN' })
 
@@ -99,12 +99,12 @@ exports.postRefresh = async (req, res) => {
             payload[roleInfo.key] = roleInfo.id
         }
         
-        const newAccessToken = jwt.sign(payload, ACCESS_SECRET, { expiresIn: '5MIN' })
+        const newAccessToken = jwt.sign(payload, ACCESS_SECRET, { expiresIn: '7D' })
 
         return res.status(200).json({AccessToken: newAccessToken})
     }
     catch (error) {
-        console.error("🔥 ERRO DETALHADO NO REFRESH:", error);
+        console.error("ERRO DETALHADO NO REFRESH:", error);
         return res.status(500).json({ message: "Erro interno no Servidor!" })
     }
 }

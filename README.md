@@ -6,7 +6,7 @@
 [![GitHub Forks](https://img.shields.io/github/forks/welbersued/edukatuapp?style=social)](https://github.com/welbersued/edukatuapp/network/members)
 
 
-O **Edu Katú** é um projeto feito para a cadeira de Desenvolvimento para Dispositivos Móveis em **gamificação educacional**, transformando a experiência de aprendizado tradicional em uma jornada interativa e recompensadora. Nosso objetivo é aumentar o engajamento e a retenção de conhecimento para melhorar cada vez mais a experiência de alunos com seus estudos diários.
+O **Edu Katú** é um projeto feito para a cadeira de Desenvolvimento para Dispositivos Móveis, focado em **gamificação educacional**, transformando a experiência de aprendizado tradicional em uma jornada interativa e recompensadora. Nosso objetivo é aumentar o engajamento e a retenção de conhecimento para melhorar cada vez mais a experiência de alunos com seus estudos diários.
 
 ---
 

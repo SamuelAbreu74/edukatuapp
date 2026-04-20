@@ -1,7 +1,7 @@
-
-
+require('dotenv').config();
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient();
+    
 
 module.exports = class Login{
 
@@ -22,7 +22,7 @@ module.exports = class Login{
             })
             return login
         } catch (error) {
-            return "Erro interno do servidor!"
+            return error
         }
     }
 

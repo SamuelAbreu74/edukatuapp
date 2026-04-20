@@ -23,6 +23,7 @@ exports.postLogin = async (req, res) => {
         }
 
         // Verificando se a senha está correta
+        console.log(await bcrypt.compare(userData.password, result.password))
         const checkPassword = await bcrypt.compare(userData.password, result.password)
 
         if (!checkPassword) {

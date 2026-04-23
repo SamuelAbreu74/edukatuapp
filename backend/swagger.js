@@ -13,13 +13,22 @@ const options = {
         url: 'http://localhost:3000',
       },
     ],
+    // --- ADICIONE ESTE BLOCO AQUI ---
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+
   },
   apis: [
     path.join(__dirname, 'Routes/*.js') 
   ], 
 };
-
-
 
 const specs = swaggerJsdoc(options);
 module.exports = specs;

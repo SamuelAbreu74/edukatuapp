@@ -1,6 +1,6 @@
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
-const swaggerSpecs = require('./swagger');
+const swaggerDocument = require('./swagger.js');
 const app = express();
 
 // =-=-=-=-= IMPORTANDO ROTAS =-=-=-=-=
@@ -15,9 +15,7 @@ app.use(express.json());
 
 
 // Rotas Públicas
-
-// No seu server.
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/', PublicRouter);
 app.use('/', Auth, PrivateRouter);
 
